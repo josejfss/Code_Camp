@@ -8,34 +8,73 @@ use code_camp;
 
 
 CREATE PROCEDURE insert_estado
-@nombre varchar(45),
-@id_usuario int = 0
+	@nombre varchar(45),
+	@id_usuario int = 0
 AS
 BEGIN
-DECLARE @id_estado INT;
+BEGIN TRANSACTION;
 
-INSERT INTO estado(nombre) VALUES (@nombre);
---Obtener el id del estado
-SET @id_estado = SCOPE_IDENTITY();
--- llenado de bitacora
-INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
-VALUES (GETDATE(), @id_usuario, 'Se creo el registro en la tabla ESTADO = '+@nombre+' ID NUMERO = '+ CONVERT(varchar(25), @id_estado));
+	BEGIN TRY
+		DECLARE @id_estado INT;
+
+		INSERT INTO estado(nombre) VALUES (@nombre);
+		--Obtener el id del estado
+		SET @id_estado = SCOPE_IDENTITY();
+		-- llenado de bitacora
+		INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+		VALUES (GETDATE(), @id_usuario, 'Se creo el registro en la tabla ESTADO = '+@nombre+' ID NUMERO = '+ CONVERT(varchar(25), @id_estado));
+
+	COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		-- deshacemos la transaccion si hay un error
+		ROLLBACK TRANSACTION;
+
+		-- Manejamos los errores
+		DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+		RAISERROR(@ErrorMensaje, 16, 1);
+		
+		-- llenado de bitacora
+		INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+		VALUES (GETDATE(), @id_usuario, 'ERROR al registar informacion en TABLA ESTADO, ERROR = ' + @ErrorMensaje);
+
+	END CATCH
 END;
+
 -- ------------------------------
-DROP PROCEDURE update_estado;
+
 CREATE PROCEDURE update_estado
-@id_estado INT,
-@nombre VARCHAR(45),
-@id_usuario int = 0
+	@id_estado INT,
+	@nombre VARCHAR(45),
+	@id_usuario int = 0
 AS
 BEGIN
-UPDATE estado
-SET nombre = @nombre
-WHERE id_estado = @id_estado;
+BEGIN TRANSACTION;
+BEGIN TRY
+	UPDATE estado
+	SET nombre = @nombre
+	WHERE id_estado = @id_estado;
 
--- llenado de bitacora
-INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
-VALUES (GETDATE(), @id_usuario, 'Se modifico el REGISTRO con IDENTIFICADOR NUMERO = '+ CONVERT(varchar(25), @id_estado)+' con el siguiente VALOR = '+ @nombre);
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'Se modifico el REGISTRO con IDENTIFICADOR NUMERO = '+ CONVERT(varchar(25), @id_estado)+' con el siguiente VALOR = '+ @nombre);
+
+	COMMIT TRANSACTION;
+
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al MODIFICAR informacion en TABLA ESTADO, ERROR = ' + @ErrorMensaje);
+
+END CATCH
 END;
 
 -- -------------------------------
@@ -47,14 +86,32 @@ CREATE PROCEDURE insert_rol
 @id_usuario int = 0
 AS
 BEGIN
-DECLARE @id_rol int;
+BEGIN TRANSACTION;
+BEGIN TRY
+	DECLARE @id_rol int;
 
-INSERT INTO rol(nombre) VALUES (@nombre);
+	INSERT INTO rol(nombre) VALUES (@nombre);
 
-SET @id_rol = SCOPE_IDENTITY();
--- llenado de bitacora
-INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
-VALUES (GETDATE(), @id_usuario, 'Se creo el registro en la tabla ROL = '+@nombre+' IDENTIFICADOR NUMERO = '+ CONVERT(varchar(25), @id_rol));
+	SET @id_rol = SCOPE_IDENTITY();
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'Se creo el registro en la tabla ROL = '+@nombre+' IDENTIFICADOR NUMERO = '+ CONVERT(varchar(25), @id_rol));
+
+	COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al registar informacion en TABLA ROL, ERROR = ' + @ErrorMensaje);
+
+END CATCH
 END;
 -- ------------------------------
 
@@ -64,14 +121,32 @@ CREATE PROCEDURE update_rol
 	@id_usuario int
 AS
 BEGIN
+BEGIN TRANSACTION;
+BEGIN TRY
+	UPDATE rol
+	SET nombre = @nombre
+	WHERE id_rol = @id_rol;
 
-UPDATE rol
-SET nombre = @nombre
-WHERE id_rol = @id_rol;
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'Se modifico el REGISTRO con IDENTIFICADOR NUMERO'+ CONVERT(varchar(25), @id_rol)+' con el siguiente VALOR = '+ @nombre);
 
--- llenado de bitacora
-INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
-VALUES (GETDATE(), @id_usuario, 'Se modifico el REGISTRO con IDENTIFICADOR NUMERO'+ CONVERT(varchar(25), @id_rol)+' con el siguiente VALOR = '+ @nombre);
+	COMMIT TRANSACTION;
+
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al MODFICICAR informacion en TABLA ROL, ERROR = ' + @ErrorMensaje);
+
+END CATCH
 END;
 
 
@@ -80,11 +155,14 @@ END;
 -- ---------------------------------------
 
 CREATE PROCEDURE insert_categoria_producto
-@nombre varchar(45),
-@id_estado int,
-@id_usuario int
+	@nombre varchar(45),
+	@id_estado int,
+	@id_usuario int
 AS
 BEGIN
+BEGIN TRANSACTION;
+BEGIN TRY
+
 	DECLARE @id_categoria_producto int;
 
 	INSERT INTO categoria_producto(nombre, fecha_creacion, id_estado, id_usuario) 
@@ -94,15 +172,33 @@ BEGIN
 -- llenado de bitacora
 	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
 	VALUES (GETDATE(), @id_usuario, 'Se creo el registro en la tabla CATEGORIA_PRODUCTO = '+@nombre+' ID NUMERO = '+ CONVERT(varchar(25), @id_categoria_producto));
+
+	COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al registar informacion en TABLA CATEGORIA_PRODUCTO, ERROR = ' + @ErrorMensaje);
+
+END CATCH
 END;
 -- ------------------------------
 CREATE PROCEDURE update_categoria_producto
-@id_categoria_producto INT,
-@nombre VARCHAR(45),
-@id_estado INT,
-@id_usuario INT
+	@id_categoria_producto INT,
+	@nombre VARCHAR(45),
+	@id_estado INT,
+	@id_usuario INT
 AS
 BEGIN
+BEGIN TRANSACTION;
+BEGIN TRY
 	UPDATE categoria_producto
 	SET 
 		nombre = @nombre,
@@ -113,6 +209,22 @@ BEGIN
 	-- llenado de bitacora
 	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
 	VALUES (GETDATE(), @id_usuario, 'Se modifico el REGISTRO de la tabla CATEGORIA_PRODUCTO = '+ CONVERT(varchar(25), @id_categoria_producto));
+
+	COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al MODIFICAR informacion en TABLA CATEGORIA_PRODUCTO, ERROR = ' + @ErrorMensaje);
+
+END CATCH
 END;
 
 
@@ -133,6 +245,8 @@ CREATE PROCEDURE insert_usuario
 	@id_rol int
 AS
 BEGIN
+BEGIN TRANSACTION;
+BEGIN TRY
 	DECLARE @id_usuario int;
 	INSERT INTO usuario(correo_electronico, 
 						primer_nombre, 
@@ -159,6 +273,22 @@ BEGIN
 -- llenado de bitacora
 	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
 	VALUES (GETDATE(), @id_usuario, 'Se creo el registro en la tabla USUARIO con ID NUMERO = '+ CONVERT(varchar(25), @id_estado));
+
+	COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al registar informacion en TABLA USUARIO, ERROR = ' + @ErrorMensaje);
+
+END CATCH
 END;
 
 --------------------------------------------------
@@ -175,6 +305,8 @@ CREATE PROCEDURE update_usuario
 
 AS
 BEGIN
+BEGIN TRANSACTION;
+BEGIN TRY
 	UPDATE usuario
 	SET correo_electronico = @correo_electronico,
 		primer_nombre = @primer_nombre,
@@ -189,6 +321,22 @@ BEGIN
 	-- llenado de bitacora
 	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
 	VALUES (GETDATE(), @id_usuario, 'Se modifico el REGISTRO de la tabla USUAR CON ID = '+ CONVERT(varchar(25), @id_rol));
+
+	COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al MODIFICAR informacion en TABLA USUARIO, ERROR = ' + @ErrorMensaje);
+
+END CATCH
 
 END;
 
@@ -208,6 +356,9 @@ CREATE PROCEDURE insert_producto
 	@foto varbinary(max) = NULL
 	AS
 BEGIN
+BEGIN TRANSACTION;
+BEGIN TRY
+
 	DECLARE @id_producto int;
 
 	INSERT INTO producto(
@@ -237,6 +388,22 @@ BEGIN
 -- llenado de bitacora
 	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
 	VALUES (GETDATE(), @id_usuario, 'Se creo el registro en la tabla PRODUCTO con ID NUMERO = '+ CONVERT(varchar(25), @id_estado));
+
+	COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al registar informacion en TABLA PRODUCTO, ERROR = ' + @ErrorMensaje);
+
+END CATCH
 END;
 
 --------------------------------------------------
@@ -252,6 +419,8 @@ CREATE PROCEDURE update_producto
 	@id_usuario int = 0
 AS
 BEGIN
+BEGIN TRANSACTION;
+BEGIN TRY
 	UPDATE producto
 	SET
 		nombre = @nombre,
@@ -266,6 +435,23 @@ BEGIN
 	-- llenado de bitacora
 	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
 	VALUES (GETDATE(), @id_usuario, 'Se modifico el REGISTRO de la tabla PRODUCTO con ID = '+ CONVERT(varchar(25), @id_producto));
+
+	COMMIT TRANSACTION;
+
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al MODIFICAR informacion en TABLA PRODUCTO, ERROR = ' + @ErrorMensaje);
+
+END CATCH
 END;
 
 
@@ -352,11 +538,11 @@ BEGIN
 		-- llenado de bitacora
 		INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
 		VALUES (GETDATE(), @id_usuario, 'Se creo el registro en la tabla ORDEN CON  ID ORDEN = '+ CONVERT(varchar(25), @orden_id));
-		-- Confirmamos la transacción
+		-- Confirmamos la transacciï¿½n
 		COMMIT TRANSACTION;
 	END TRY
 	BEGIN CATCH
-		-- deshacemos la transacción si hay un error
+		-- deshacemos la transacciï¿½n si hay un error
 		ROLLBACK TRANSACTION;
 
 		-- Manejamos los errores
@@ -365,7 +551,7 @@ BEGIN
 		
 		-- llenado de bitacora
 		INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
-		VALUES (GETDATE(), @id_usuario, 'ERROR al registar información en TABLA ORDEN, ERROR = ' + @ErrorMensaje);
+		VALUES (GETDATE(), @id_usuario, 'ERROR al registar informaciï¿½n en TABLA ORDEN, ERROR = ' + @ErrorMensaje);
 
 	END CATCH
 END
@@ -392,6 +578,8 @@ CREATE PROCEDURE update_orden
 
 AS
 BEGIN
+BEGIN TRANSACTION;
+BEGIN TRY
 
 	UPDATE orden
 	SET 
@@ -412,6 +600,22 @@ BEGIN
 	-- llenado de bitacora
 	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
 	VALUES (GETDATE(), @id_usuario, 'Se modifico el REGISTRO de la tabla ORDEN con ID = '+ CONVERT(varchar(25), @id_orden));
+
+	COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al MODIFICAR informacion en TABLA ORDEN, ERROR = ' + @ErrorMensaje);
+
+END CATCH
 END;
 
 
@@ -428,6 +632,8 @@ CREATE PROCEDURE update_orden_detalle
 	@id_usuario int = NULL
 AS
 BEGIN
+BEGIN TRANSACTION;
+BEGIN TRY
 	UPDATE orden_detalle
 	SET
 		cantidad = @cantidad,
@@ -440,6 +646,23 @@ BEGIN
 	-- llenado de bitacora
 	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
 	VALUES (GETDATE(), @id_usuario, 'Se modifico el REGISTRO de la tabla ORDEN DETALLE con IDENTIFICADOR = '+ CONVERT(varchar(25), @id_orden_detalle));
+
+	COMMIT TRANSACTION;
+
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al MODIFICAR informacion en TABLA ORDEN DETALLE, ERROR = ' + @ErrorMensaje);
+
+END CATCH
 END;
 
 
@@ -472,33 +695,33 @@ EXEC insert_estado @nombre = 'En proceso';
 EXEC insert_estado @nombre = 'Facturado';
 EXEC update_estado @id_estado = 32, @nombre = 'Sin existencias';
 
-EXEC insert_usuario 'juan.carlos.perez@example.com', 'Juan', 'Carlos', 'Pérez', 'López', '12345678', '1985-05-14', '40', 1;
-EXEC insert_usuario 'maria.fernanda.garcia@example.com', 'María', 'Fernanda', 'García', 'Torres', '23456789', '1990-08-22', 38, 1
-EXEC insert_usuario 'jose.antonio.ramirez@example.com', 'José', 'Antonio', 'Ramírez', 'Díaz', '34567890', '1979-12-01', 42, 1;
-EXEC insert_usuario 'ana.lucia.gomez@example.com', 'Ana', 'Lucía', 'Gómez', 'Mendoza', '45678901', '1988-03-30', 39, 1;
+EXEC insert_usuario 'juan.carlos.perez@example.com', 'Juan', 'Carlos', 'Pï¿½rez', 'Lï¿½pez', '12345678', '1985-05-14', '40', 1;
+EXEC insert_usuario 'maria.fernanda.garcia@example.com', 'Marï¿½a', 'Fernanda', 'Garcï¿½a', 'Torres', '23456789', '1990-08-22', 38, 1
+EXEC insert_usuario 'jose.antonio.ramirez@example.com', 'Josï¿½', 'Antonio', 'Ramï¿½rez', 'Dï¿½az', '34567890', '1979-12-01', 42, 1;
+EXEC insert_usuario 'ana.lucia.gomez@example.com', 'Ana', 'Lucï¿½a', 'Gï¿½mez', 'Mendoza', '45678901', '1988-03-30', 39, 1;
 EXEC insert_usuario 'luis.miguel.torres@example.com', 'Luis', 'Miguel', 'Torres', 'Vargas', '56789012', '1992-07-17', 41, 1;
-EXEC insert_usuario 'carla.patricia.fernandez@example.com', 'Carla', 'Patricia', 'Fernández', 'Ruiz', '67890123', '1983-11-05', 38, 1;
-EXEC insert_usuario 'roberto.alejandro.martinez@example.com', 'Roberto', 'Alejandro', 'Martínez', 'Salinas', '78901234', '1995-02-12', 40, 1;
-EXEC insert_usuario 'elena.sofia.sanchez@example.com', 'Elena', 'Sofía', 'Sánchez', 'Morales', '89012345', '1980-09-27', 40, 1;
+EXEC insert_usuario 'carla.patricia.fernandez@example.com', 'Carla', 'Patricia', 'Fernï¿½ndez', 'Ruiz', '67890123', '1983-11-05', 38, 1;
+EXEC insert_usuario 'roberto.alejandro.martinez@example.com', 'Roberto', 'Alejandro', 'Martï¿½nez', 'Salinas', '78901234', '1995-02-12', 40, 1;
+EXEC insert_usuario 'elena.sofia.sanchez@example.com', 'Elena', 'Sofï¿½a', 'Sï¿½nchez', 'Morales', '89012345', '1980-09-27', 40, 1;
 EXEC insert_usuario 'pablo.esteban.rojas@example.com', 'Pablo', 'Esteban', 'Rojas', 'Aguilar', '90123456', '1987-06-18', 39, 1;
-EXEC insert_usuario 'daniela.paola.hernandez@example.com', 'Daniela', 'Paola', 'Hernández', 'Castro', '12345679', '1982-04-25', 42, 1;
+EXEC insert_usuario 'daniela.paola.hernandez@example.com', 'Daniela', 'Paola', 'Hernï¿½ndez', 'Castro', '12345679', '1982-04-25', 42, 1;
 EXEC insert_usuario 'jorge.luis.ortiz@example.com', 'Jorge', 'Luis', 'Ortiz', 'Paredes', '23456780', '1993-10-11', 41, 1;
-EXEC insert_usuario 'isabel.mariana.vega@example.com', 'Isabel', 'Mariana', 'Vega', 'Peña', '34567891', '1986-01-08', 40, 1;
+EXEC insert_usuario 'isabel.mariana.vega@example.com', 'Isabel', 'Mariana', 'Vega', 'Peï¿½a', '34567891', '1986-01-08', 40, 1;
 EXEC insert_usuario 'carlos.eduardo.flores@example.com', 'Carlos', 'Eduardo', 'Flores', 'Navarro', '45678902', '1991-11-23', 38, 1;
-EXEC insert_usuario 'lucia.beatriz.medina@example.com', 'Lucía', 'Beatriz', 'Medina', 'Ramos', '56789013', '1984-05-30', 43, 1;
-EXEC insert_usuario 'ricardo.david.herrera@example.com', 'Ricardo', 'David', 'Herrera', 'Ríos', '67890124', '1978-02-02', 42, 1;
-EXEC insert_usuario 'maria.jose.lara@example.com', 'María', 'José', 'Lara', 'Cruz', '78901235', '1990-08-15', 41, 1;
-EXEC insert_usuario 'fernando.andres.vazquez@example.com', 'Fernando', 'Andrés', 'Vázquez', 'León', '89012346', '1981-03-10', 39, 1;
+EXEC insert_usuario 'lucia.beatriz.medina@example.com', 'Lucï¿½a', 'Beatriz', 'Medina', 'Ramos', '56789013', '1984-05-30', 43, 1;
+EXEC insert_usuario 'ricardo.david.herrera@example.com', 'Ricardo', 'David', 'Herrera', 'Rï¿½os', '67890124', '1978-02-02', 42, 1;
+EXEC insert_usuario 'maria.jose.lara@example.com', 'Marï¿½a', 'Josï¿½', 'Lara', 'Cruz', '78901235', '1990-08-15', 41, 1;
+EXEC insert_usuario 'fernando.andres.vazquez@example.com', 'Fernando', 'Andrï¿½s', 'Vï¿½zquez', 'Leï¿½n', '89012346', '1981-03-10', 39, 1;
 EXEC insert_usuario 'valeria.alejandra.castro@example.com', 'Valeria', 'Alejandra', 'Castro', 'Espinosa', '90123457', '1989-09-05', 38, 1;
 EXEC insert_usuario 'gabriel.santiago.ruiz@example.com', 'Gabriel', 'Santiago', 'Ruiz', 'Acosta', '12345680', '1994-07-19', 40, 1;
-EXEC insert_usuario 'sofia.catalina.morales@example.com', 'Sofía', 'Catalina', 'Morales', 'Hernández', '23456781', '1985-12-21', 43, 1;
+EXEC insert_usuario 'sofia.catalina.morales@example.com', 'Sofï¿½a', 'Catalina', 'Morales', 'Hernï¿½ndez', '23456781', '1985-12-21', 43, 1;
 EXEC insert_usuario 'jose.francisco.santos.salazar@example.com', 'Jose', 'Francisco', 'Santos', 'Salazar', '58746321', '1998-12-21', 43, 2;
 
 
 
 
 EXEC insert_categoria_producto 'Cereales', 32, 7;
-EXEC insert_categoria_producto 'Lácteos', 34, 12;
+EXEC insert_categoria_producto 'Lï¿½cteos', 34, 12;
 EXEC insert_categoria_producto 'Enlatados', 36, 18;
 EXEC insert_categoria_producto 'Galletas', 33, 5;
 EXEC insert_categoria_producto 'Bebidas', 35, 10;
@@ -506,12 +729,12 @@ EXEC insert_categoria_producto 'Snacks', 32, 15;
 EXEC insert_categoria_producto 'Condimentos', 37, 8;
 EXEC insert_categoria_producto 'Frutas', 33, 20;
 EXEC insert_categoria_producto 'Verduras', 34, 3;
-EXEC insert_categoria_producto 'Panadería', 35, 17;
+EXEC insert_categoria_producto 'Panaderï¿½a', 35, 17;
 EXEC insert_categoria_producto 'Carnes', 32, 4;
 EXEC insert_categoria_producto 'Pastas', 36, 14;
 EXEC insert_categoria_producto 'Limpieza', 37, 9;
 EXEC insert_categoria_producto 'Cereales', 33, 1;
-EXEC insert_categoria_producto 'Lácteos', 34, 13;
+EXEC insert_categoria_producto 'Lï¿½cteos', 34, 13;
 EXEC insert_categoria_producto 'Enlatados', 36, 19;
 EXEC insert_categoria_producto 'Galletas', 32, 2;
 EXEC insert_categoria_producto 'Bebidas', 35, 16;
@@ -519,12 +742,12 @@ EXEC insert_categoria_producto 'Snacks', 37, 6;
 EXEC insert_categoria_producto 'Condimentos', 34, 11;
 EXEC insert_categoria_producto 'Frutas', 32, 18;
 EXEC insert_categoria_producto 'Verduras', 33, 7;
-EXEC insert_categoria_producto 'Panadería', 36, 14;
+EXEC insert_categoria_producto 'Panaderï¿½a', 36, 14;
 EXEC insert_categoria_producto 'Carnes', 35, 12;
 EXEC insert_categoria_producto 'Pastas', 37, 10;
 EXEC insert_categoria_producto 'Limpieza', 34, 3;
 EXEC insert_categoria_producto 'Cereales', 32, 15;
-EXEC insert_categoria_producto 'Lácteos', 33, 2;
+EXEC insert_categoria_producto 'Lï¿½cteos', 33, 2;
 EXEC insert_categoria_producto 'Enlatados', 36, 11;
 EXEC insert_categoria_producto 'Galletas', 37, 20;
 EXEC insert_categoria_producto 'Bebidas', 34, 1;
@@ -532,12 +755,12 @@ EXEC insert_categoria_producto 'Snacks', 35, 17;
 EXEC insert_categoria_producto 'Condimentos', 32, 8;
 EXEC insert_categoria_producto 'Frutas', 37, 4;
 EXEC insert_categoria_producto 'Verduras', 36, 13;
-EXEC insert_categoria_producto 'Panadería', 33, 9;
+EXEC insert_categoria_producto 'Panaderï¿½a', 33, 9;
 EXEC insert_categoria_producto 'Carnes', 34, 6;
 EXEC insert_categoria_producto 'Pastas', 35, 19;
 EXEC insert_categoria_producto 'Limpieza', 32, 5;
 EXEC insert_categoria_producto 'Cereales', 36, 16;
-EXEC insert_categoria_producto 'Lácteos', 37, 14;
+EXEC insert_categoria_producto 'Lï¿½cteos', 37, 14;
 EXEC insert_categoria_producto 'Enlatados', 33, 3;
 EXEC insert_categoria_producto 'Galletas', 34, 18;
 EXEC insert_categoria_producto 'Bebidas', 32, 12;
@@ -545,7 +768,7 @@ EXEC insert_categoria_producto 'Snacks', 36, 11;
 EXEC insert_categoria_producto 'Condimentos', 37, 7;
 EXEC insert_categoria_producto 'Frutas', 34, 19;
 EXEC insert_categoria_producto 'Verduras', 35, 10;
-EXEC insert_categoria_producto 'Panadería', 32, 6;
+EXEC insert_categoria_producto 'Panaderï¿½a', 32, 6;
 EXEC insert_categoria_producto 'Carnes', 37, 13;
 
 
@@ -561,12 +784,12 @@ EXEC insert_producto 'Jugo de Naranja', 'Del Valle', '008-JN', 100, 34, 20;
 EXEC insert_producto 'Yogurt Natural', 'Yoplait', '009-YN', 45, 34, 3;
 EXEC insert_producto 'Pan Integral', 'Bimbo', '010-PI', 90, 34, 17;
 EXEC insert_producto 'Salsa de Tomate', 'Hunts', '011-ST', 140, 34, 4;
-EXEC insert_producto 'Atún en Agua', 'Dolores', '012-AA', 75, 34, 14;
+EXEC insert_producto 'Atï¿½n en Agua', 'Dolores', '012-AA', 75, 34, 14;
 EXEC insert_producto 'Arroz Blanco', 'La Preferida', '013-AB', 130, 33, 9;
 EXEC insert_producto 'Frijoles Bayos', 'Isadora', '014-FB', 70, 34, 1;
 EXEC insert_producto 'Mantequilla', 'Lala', '015-M', 55, 34, 13;
 EXEC insert_producto 'Queso Panela', 'Nochebuena', '016-QP', 95, 34, 19;
-EXEC insert_producto 'Café Molido', 'Nescafé', '017-CM', 85, 36, 2;
+EXEC insert_producto 'Cafï¿½ Molido', 'Nescafï¿½', '017-CM', 85, 36, 2;
 EXEC insert_producto 'Galletas de Vainilla', 'Gamesa', '018-GV', 50, 34, 16;
 EXEC insert_producto 'Refresco de Cola', 'Coca-Cola', '019-RC', 250, 34, 6;
 EXEC insert_producto 'Agua Embotellada', 'Bonafont', '020-AE', 180, 34, 11;
@@ -576,33 +799,33 @@ EXEC insert_producto 'Pan Blanco', 'Bimbo', '023-PB', 110, 34, 17;
 EXEC insert_producto 'Mayonesa', 'McCormick', '024-M', 125, 32, 4;
 EXEC insert_producto 'Salsa de Soja', 'Kikkoman', '025-SS', 40, 34, 14;
 EXEC insert_producto 'Leche Entera', 'Alpura', '026-LE', 100, 34, 9;
-EXEC insert_producto 'Café Instantáneo', 'Nescafé', '027-CI', 200, 34, 1;
+EXEC insert_producto 'Cafï¿½ Instantï¿½neo', 'Nescafï¿½', '027-CI', 200, 34, 1;
 EXEC insert_producto 'Galletas Saladas', 'Kretschmer', '028-GS', 90, 33, 13;
 EXEC insert_producto 'Agua Mineral', 'Perrier', '029-AM', 60, 34, 19;
 EXEC insert_producto 'Mermelada de Fresa', 'Smuckers', '030-MF', 75, 34, 2;
-EXEC insert_producto 'Azúcar Morena', 'Zulka', '031-AM', 85, 34, 16;
+EXEC insert_producto 'Azï¿½car Morena', 'Zulka', '031-AM', 85, 34, 16;
 EXEC insert_producto 'Frijoles Refritos', 'Isadora', '032-FR', 70, 34, 6;
-EXEC insert_producto 'Crema de Maní', 'Skippy', '033-CM', 110, 37, 11;
+EXEC insert_producto 'Crema de Manï¿½', 'Skippy', '033-CM', 110, 37, 11;
 EXEC insert_producto 'Aceite Vegetal', 'Capullo', '034-AV', 140, 34, 18;
 EXEC insert_producto 'Cereal Integral', 'Fitness', '035-CI', 120, 34, 3;
 EXEC insert_producto 'Pan Molido', 'Bimbo', '036-PM', 130, 34, 17;
-EXEC insert_producto 'Atún en Aceite', 'Tuny', '037-AA', 80, 34, 4;
-EXEC insert_producto 'Leche Condensada', 'Nestlé', '038-LC', 60, 34, 14;
-EXEC insert_producto 'Galletas Digestivas', 'Cuétara', '039-GD', 70, 34, 9;
+EXEC insert_producto 'Atï¿½n en Aceite', 'Tuny', '037-AA', 80, 34, 4;
+EXEC insert_producto 'Leche Condensada', 'Nestlï¿½', '038-LC', 60, 34, 14;
+EXEC insert_producto 'Galletas Digestivas', 'Cuï¿½tara', '039-GD', 70, 34, 9;
 EXEC insert_producto 'Pasta Fusilli', 'Barilla', '040-PF', 200, 34, 1;
-EXEC insert_producto 'Café de Olla', 'Nescafé', '041-CO', 50, 34, 13;
-EXEC insert_producto 'Refresco de Limón', 'Sprite', '042-RL', 210, 32, 19;
+EXEC insert_producto 'Cafï¿½ de Olla', 'Nescafï¿½', '041-CO', 50, 34, 13;
+EXEC insert_producto 'Refresco de Limï¿½n', 'Sprite', '042-RL', 210, 32, 19;
 EXEC insert_producto 'Galletas de Mantequilla', 'Gamesa', '043-GM', 150, 34, 16;
 EXEC insert_producto 'Jugo de Manzana', 'Del Valle', '044-JM', 170, 34, 6;
 EXEC insert_producto 'Yogurt con Cereales', 'Lala', '045-YC', 65, 34, 11;
 EXEC insert_producto 'Pan Tostado', 'Bimbo', '046-PT', 95, 34, 18;
 EXEC insert_producto 'Manteca Vegetal', 'Inca', '047-MV', 130, 33, 3;
-EXEC insert_producto 'Galletas María', 'Gamesa', '048-GM', 110, 34, 17;
-EXEC insert_producto 'Leche Evaporada', 'Nestlé', '049-LE', 100, 34, 4;
-EXEC insert_producto 'Atún Ahumado', 'Dolores', '050-AA', 85, 34, 14;
+EXEC insert_producto 'Galletas Marï¿½a', 'Gamesa', '048-GM', 110, 34, 17;
+EXEC insert_producto 'Leche Evaporada', 'Nestlï¿½', '049-LE', 100, 34, 4;
+EXEC insert_producto 'Atï¿½n Ahumado', 'Dolores', '050-AA', 85, 34, 14;
 EXEC insert_producto 'Pasta Penne', 'Barilla', '051-PP', 180, 34, 9;
 EXEC insert_producto 'Aceite de Coco', 'Nutiva', '052-AC', 40, 34, 1;
-EXEC insert_producto 'Café Americano', 'Folgers', '053-CA', 120, 34, 13;
+EXEC insert_producto 'Cafï¿½ Americano', 'Folgers', '053-CA', 120, 34, 13;
 EXEC insert_producto 'Galletas de Avena', 'Quaker', '054-GA', 60, 34, 19;
 EXEC insert_producto 'Jugo de Uva', 'Jumex', '055-JU', 140, 34, 2;
 EXEC insert_producto 'Yogurt Griego', 'Oikos', '056-YG', 85, 34, 16;
@@ -611,7 +834,7 @@ EXEC insert_producto 'Mermelada de Durazno', 'Smuckers', '058-MD', 55, 34, 11;
 EXEC insert_producto 'Crema de Avellanas', 'Nutella', '059-CA', 150, 34, 18;
 EXEC insert_producto 'Arroz Precocido', 'Uncle Bens', '060-AP', 100, 34, 3;
 EXEC insert_producto 'Frijoles Charros', 'La Sierra', '061-FC', 75, 34, 17;
-EXEC insert_producto 'Galletas Digestive', 'María', '062-GD', 130, 32, 4;
+EXEC insert_producto 'Galletas Digestive', 'Marï¿½a', '062-GD', 130, 32, 4;
 
 
 
@@ -630,19 +853,19 @@ INSERT INTO  @detalle_orden (id_producto, cantidad, precio)
 VALUES (2, 4, 9.99),
        (27, 2, 17.99);
 
-EXEC crear_pedido 'Guatemala', 'Villa Nueva', '46', 'Avenida Bolívar 12-34, Zona 46', '23456780', '2023-08-18', 47.96, 19, 46,  @detalle_orden;
+EXEC crear_pedido 'Guatemala', 'Villa Nueva', '46', 'Avenida Bolï¿½var 12-34, Zona 46', '23456780', '2023-08-18', 47.96, 19, 46,  @detalle_orden;
 
 
--- Instrucción 1
+-- Instrucciï¿½n 1
 DECLARE @detalle_orden AS tipo_detalle_orden ;
 INSERT INTO @detalle_orden (id_producto, cantidad, precio)
 VALUES (18, 2, 14.99),
        (35, 3, 7.99),
        (52, 1, 21.99);
 
-EXEC crear_pedido 'Suchitepéquez', 'Mazatenango', '2', 'Avenida Central 5-32, Zona 2', '24256789', '2023-09-12', 44.97, 10, 45, @detalle_orden;
+EXEC crear_pedido 'Suchitepï¿½quez', 'Mazatenango', '2', 'Avenida Central 5-32, Zona 2', '24256789', '2023-09-12', 44.97, 10, 45, @detalle_orden;
 
--- Instrucción 2
+-- Instrucciï¿½n 2
 DECLARE @detalle_orden AS tipo_detalle_orden ;
 INSERT INTO @detalle_orden (id_producto, cantidad, precio)
 VALUES (4, 4, 8.99),
@@ -650,16 +873,16 @@ VALUES (4, 4, 8.99),
 
 EXEC crear_pedido 'Quetzaltenango', 'Quetzaltenango', '46', 'Calle Santander 12-34, Zona 46', '23456780', '2023-08-22', 43.96, 17, 46, @detalle_orden;
 
--- Instrucción 3
+-- Instrucciï¿½n 3
 DECLARE @detalle_orden AS tipo_detalle_orden ;
 INSERT INTO @detalle_orden (id_producto, cantidad, precio)
 VALUES (11, 2, 11.99),
        (38, 3, 9.99),
        (55, 1, 22.99);
 
-EXEC crear_pedido 'Petén', 'Flores', '1', 'Avenida Principal 3-45, Zona 1', '24256789', '2023-09-15', 44.97, 12, 45, @detalle_orden;
+EXEC crear_pedido 'Petï¿½n', 'Flores', '1', 'Avenida Principal 3-45, Zona 1', '24256789', '2023-09-15', 44.97, 12, 45, @detalle_orden;
 
--- Instrucción 4
+-- Instrucciï¿½n 4
 DECLARE @detalle_orden AS tipo_detalle_orden ;
 INSERT INTO @detalle_orden (id_producto, cantidad, precio)
 VALUES (6, 4, 9.99),
@@ -667,16 +890,16 @@ VALUES (6, 4, 9.99),
 
 EXEC crear_pedido 'Guatemala', 'Villa Nueva', '46', 'Calle Central 12-34, Zona 46', '23456780', '2023-08-25', 47.96, 19, 46,@detalle_orden;
 
--- Instrucción 5
+-- Instrucciï¿½n 5
 DECLARE @detalle_orden AS tipo_detalle_orden ;
 INSERT INTO @detalle_orden (id_producto, cantidad, precio)
 VALUES (19, 2, 15.99),
        (36, 3, 8.99),
        (53, 1, 23.99);
 
-EXEC crear_pedido 'Retalhuleu', 'Retalhuleu', '2', 'Avenida Liberación 5-32, Zona 2', '24256789', '2023-09-18', 47.97, 14, 46, @detalle_orden;
+EXEC crear_pedido 'Retalhuleu', 'Retalhuleu', '2', 'Avenida Liberaciï¿½n 5-32, Zona 2', '24256789', '2023-09-18', 47.97, 14, 46, @detalle_orden;
 
--- Instrucción 6--------------------------------
+-- Instrucciï¿½n 6--------------------------------
 DECLARE @detalle_orden AS tipo_detalle_orden ;
 INSERT INTO @detalle_orden (id_producto, cantidad, precio)
 VALUES (3, 4, 7.99),
@@ -684,7 +907,7 @@ VALUES (3, 4, 7.99),
 
 EXEC crear_pedido 'Huehuetenango', 'Huehuetenango', '46', 'Calle Mayor 12-34, Zona 46', '23456780', '2023-08-28', 43.96, 16, 46, @detalle_orden;
 
--- Instrucción 7
+-- Instrucciï¿½n 7
 DECLARE @detalle_orden AS tipo_detalle_orden ;
 INSERT INTO @detalle_orden (id_producto, cantidad, precio)
 VALUES (12, 2, 12.99),
@@ -693,7 +916,7 @@ VALUES (12, 2, 12.99),
 
 EXEC crear_pedido 'San Marcos', 'San Marcos', '1', 'Avenida Principal 3-45, Zona 1', '24256789', '2023-09-21', 48.97, 13, 46, @detalle_orden;
 
--- Instrucción 8
+-- Instrucciï¿½n 8
 DECLARE @detalle_orden AS tipo_detalle_orden ;
 INSERT INTO @detalle_orden (id_producto, cantidad, precio)
 VALUES (5, 4, 8.99),
