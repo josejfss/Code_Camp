@@ -2,7 +2,6 @@ const crypto = require('crypto');
 
 const encriptar = (password) => {
 	let password_hash = crypto.createHash('sha256').update(password).digest('hex');
-	console.log(password_hash);
 	return password_hash;
 };
 

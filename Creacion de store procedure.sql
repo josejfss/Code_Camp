@@ -235,6 +235,7 @@ END;
 
 CREATE PROCEDURE insert_usuario
 	@correo_electronico varchar(70),
+	@contrasena VARCHAR(250),
 	@primer_nombre varchar(100),
 	@segundo_nombre varchar(100),
 	@primer_apellido varchar(100),
@@ -249,6 +250,7 @@ BEGIN TRANSACTION;
 BEGIN TRY
 	DECLARE @id_usuario int;
 	INSERT INTO usuario(correo_electronico, 
+						contrasena,
 						primer_nombre, 
 						segundo_nombre,
 						primer_apellido,
@@ -259,6 +261,7 @@ BEGIN TRY
 						id_estado,
 						id_rol)
 	VALUES(@correo_electronico,
+			@contrasena,
 			@primer_nombre,
 			@segundo_nombre,
 			@primer_apellido,
@@ -695,7 +698,7 @@ EXEC insert_estado @nombre = 'En proceso';
 EXEC insert_estado @nombre = 'Facturado';
 EXEC update_estado @id_estado = 32, @nombre = 'Sin existencias';
 
-EXEC insert_usuario 'juan.carlos.perez@example.com', 'Juan', 'Carlos', 'P�rez', 'L�pez', '12345678', '1985-05-14', '40', 1;
+EXEC insert_usuario 'juan.carlos.perez@example.com','12345678', 'Juan', 'Carlos', 'Perez', 'Lopez', '12345678', '1985-05-14', 1, 2;
 EXEC insert_usuario 'maria.fernanda.garcia@example.com', 'Mar�a', 'Fernanda', 'Garc�a', 'Torres', '23456789', '1990-08-22', 38, 1
 EXEC insert_usuario 'jose.antonio.ramirez@example.com', 'Jos�', 'Antonio', 'Ram�rez', 'D�az', '34567890', '1979-12-01', 42, 1;
 EXEC insert_usuario 'ana.lucia.gomez@example.com', 'Ana', 'Luc�a', 'G�mez', 'Mendoza', '45678901', '1988-03-30', 39, 1;
@@ -962,3 +965,5 @@ DROP PROCEDURE update_producto;
 DROP PROCEDURE update_rol;
 DROP PROCEDURE update_usuario;
 
+
+select * from usuario;

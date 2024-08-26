@@ -1,3 +1,4 @@
+const e = require('express');
 const {encriptar} = require('../../encryption/encriptar')
 const {tokenSign} = require('../../encryption/jwt')
 const multer  = require('multer')
@@ -52,7 +53,7 @@ module.exports = (express,app) => {
 			});
 		}catch (error) {
 			console.error(error);
-			return res.status(401).json({response_text:"Usuario no existe"});
+			return res.status(401).json({response_text:error});
 		}
 
     });

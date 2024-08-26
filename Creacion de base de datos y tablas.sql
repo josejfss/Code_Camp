@@ -20,6 +20,7 @@ CREATE TABLE  rol (
 CREATE TABLE  usuario (
   id_usuario INT NOT NULL IDENTITY(1,1),
   correo_electronico VARCHAR(70),
+  contrasena VARCHAR(250),
   primer_nombre VARCHAR(100),
   segundo_nombre VARCHAR(100),
   primer_apellido VARCHAR(100),
