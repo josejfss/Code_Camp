@@ -38,17 +38,14 @@ module.exports = (express,app) => {
                 // Llamar al procedimiento almacenado para crear un estado
                 const state = await sequelize.query(`SELECT * FROM estado;`);
     
-                console.log(state);
                 return res.status(200).json({
                     "data" : state[0]
                 });
                 
             }catch (error) {
-                console.error(error);
                 return res.status(400).json({response_text:error});
             }
         }catch (error) {    
-            console.error(error);
             return res.status(400).json({response_text:error});
         }
     });
