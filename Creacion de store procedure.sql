@@ -966,4 +966,4 @@ DROP PROCEDURE update_rol;
 DROP PROCEDURE update_usuario;
 
 
-select * from usuario;
+select * from estado;
