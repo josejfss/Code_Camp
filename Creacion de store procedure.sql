@@ -355,8 +355,9 @@ CREATE PROCEDURE insert_producto
 	@stock float,
 	@id_estado int,
 	@id_categoria_producto int,
-	@id_usuario int = 21,
-	@foto varbinary(max) = NULL
+	@id_usuario int = 1,
+	@foto VARCHAR(100) = NULL,
+	@precio float
 	AS
 BEGIN
 BEGIN TRANSACTION;
@@ -371,6 +372,7 @@ BEGIN TRY
 					stock,
 					fecha_creacion,
 					foto,
+					precio,
 					id_estado,
 					id_categoria_producto,
 					id_usuario
@@ -382,6 +384,7 @@ BEGIN TRY
 		@stock,
 		GETDATE(),
 		@foto,
+		@precio,
 		@id_estado,
 		@id_categoria_producto,
 		@id_usuario
@@ -410,13 +413,14 @@ END CATCH
 END;
 
 --------------------------------------------------
+
 CREATE PROCEDURE update_producto
 	@id_producto int,
 	@nombre varchar(45),
 	@marca varchar(45),
 	@codigo varchar(45),
 	@stock float,
-	@foto varbinary(max),
+	@precio float,
 	@id_estado int,
 	@id_categoria_producto int,
 	@id_usuario int = 0
@@ -429,7 +433,8 @@ BEGIN TRY
 		nombre = @nombre,
 		marca = @marca,
 		codigo = @codigo,
-		foto = @foto,
+		stock = @stock,
+		precio = @precio,
 		id_estado = @id_estado,
 		id_categoria_producto = @id_categoria_producto,
 		id_usuario = @id_usuario
@@ -926,27 +931,7 @@ VALUES (5, 4, 8.99),
        (32, 2, 17.99);
 
 EXEC crear_pedido 'Guatemala', 'Mixco', '46', 'Calle Central 12-34, Zona 46', '23456780', '2023-08-31', 46.96, 20, 46, @detalle_orden;
-----------------------------------------------------
--- CONSULTAS GENERALES A TABLAS 
-----------------------------------------------------
-select *
-from bitacora;
 
-select *
-from estado;
-
-SELECT *
-FROM rol;
-
-SELECT *
-FROM categoria_producto;
-
-SELECT * FROM producto;
-
-SELECT * FROM usuario;
-
-SELECT * FROM pedido;
-SELECT * FROM orden;
 
 -- ----------------------------------------
 -- ELIMINACION DE TODOS LOS SP'S
@@ -965,5 +950,22 @@ DROP PROCEDURE update_producto;
 DROP PROCEDURE update_rol;
 DROP PROCEDURE update_usuario;
 
+----------------------------------------------------
+-- CONSULTAS GENERALES A TABLAS 
+----------------------------------------------------
+select * from bitacora;
 
 select * from estado;
+
+SELECT * FROM rol;
+
+SELECT * FROM categoria_producto;
+
+SELECT * FROM producto; 
+
+SELECT * FROM usuario;
+
+SELECT * FROM pedido;
+
+SELECT * FROM orden;
+
