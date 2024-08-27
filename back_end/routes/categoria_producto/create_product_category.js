@@ -22,15 +22,16 @@ const sequelize = new Sequelize (process.env.DATABASE,
 
 module.exports = (express,app) => {
     
-	app.post('/create_state', checkAuth, check_role_auth(2), upload.any(), async function(req,res){
+	app.post('/create_product_category', checkAuth, check_role_auth(2), upload.any(), async function(req,res){
         try{
             const { 
-                nombre
+                nombre,
+                id_estado
             } = req.body;
             
             // Validar campos obligatorios
-            if (!nombre) {
-                return res.status(400).json({response_text:"Faltan campos obligatorio NOMBRE"});
+            if (!nombre || !id_estado) {
+                return res.status(400).json({response_text:"Faltan campos obligatorio  NOMBRE o ID_ESTADO"});
             }
             
             //TODO: authorization: 
@@ -39,20 +40,20 @@ module.exports = (express,app) => {
 
             try {
                 // Llamar al procedimiento almacenado para crear un estado
-                const state = await sequelize.query(`EXEC insert_estado '${nombre}', ${id_usuario};`);
+                const product_category = await sequelize.query(`EXEC insert_categoria_producto '${nombre}', ${id_estado}, ${id_usuario};`);
                 // if (state[0].row_aff === 0) {
                 //     return res.status(400).json({response_text:"Error al crear estado"});
                 // }
                 return res.status(200).json({
-                    "response_text":"Estado creado", 
+                    "response_text":"Categoria de producto creada", 
                 });
                 
             }catch (error) {
+                console.error(error);
                 return res.status(400).json({response_text:error});
             }
         }catch (error) {
             return res.status(400).json({response_text:error});
         }
-
     });
 }

@@ -21,24 +21,15 @@ const sequelize = new Sequelize (process.env.DATABASE,
 
 module.exports = (express,app) => {
     
-	app.get('/get_state', checkAuth, upload.any(), async function(req,res){
+	app.get('/get_product_category', checkAuth, check_role_auth(2), upload.any(), async function(req,res){
         try {
-        // const { 
-        //     id_estado,
-        //     nombre
-        //  } = req.body;
-        
-        // // Validar campos obligatorios
-        //  if (!nombre) {
-        //     return res.status(400).json({response_text:"Faltan campos obligatorio NOMBRE"});
-        // }
                 
             try {
-                // Llamar al procedimiento almacenado para crear un estado
-                const state = await sequelize.query(`SELECT * FROM estado;`);
+                // Query  para obtener la categoria de productos
+                const data = await sequelize.query(`SELECT id_categoria_producto, nombre, id_estado FROM categoria_producto;`);
     
                 return res.status(200).json({
-                    "data" : state[0]
+                    "data" : data[0]
                 });
                 
             }catch (error) {

@@ -1,4 +1,3 @@
-const e = require('express');
 const multer  = require('multer')
 const upload = multer({ dest: 'uploads/' })
 const checkAuth = require('../../middleware/auth');
@@ -49,11 +48,9 @@ module.exports = (express,app) => {
                 });
                 
             }catch (error) {
-                console.error(error);
                 return res.status(400).json({response_text:error});
             }
         }catch (error) {
-            console.error(error);
             return res.status(400).json({response_text:error});
         }
 
