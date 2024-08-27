@@ -1,4 +1,3 @@
-const e = require('express');
 const multer  = require('multer')
 const upload = multer({ dest: 'uploads/' })
 const checkAuth = require('../../middleware/auth');
@@ -22,7 +21,7 @@ const sequelize = new Sequelize (process.env.DATABASE,
 
 module.exports = (express,app) => {
     
-	app.get('/get_state', checkAuth, check_role_auth(2), upload.any(), async function(req,res){
+	app.get('/get_state', checkAuth, upload.any(), async function(req,res){
         try {
         // const { 
         //     id_estado,

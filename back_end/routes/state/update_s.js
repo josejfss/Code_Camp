@@ -1,4 +1,3 @@
-const e = require('express');
 const multer  = require('multer')
 const upload = multer({ dest: 'uploads/' })
 const checkAuth = require('../../middleware/auth');
