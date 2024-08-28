@@ -25,7 +25,7 @@ const sequelize = new Sequelize (process.env.DATABASE,
 
 module.exports = (express,app) => {
     
-	app.post('/update_product', checkAuth, check_role_auth(2), upload.any(), async function(req,res){
+	app.put('/update_product', checkAuth, check_role_auth(2), upload.any(), async function(req,res){
         try{
             const { 
                 id_producto,
