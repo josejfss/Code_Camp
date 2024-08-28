@@ -25,21 +25,23 @@ const sequelize = new Sequelize (process.env.DATABASE,
 
 module.exports = (express,app) => {
     
-	app.put('/update_product', checkAuth, check_role_auth(2), upload.any(), async function(req,res){
+	app.put('/update_orden', checkAuth, upload.any(), async function(req,res){
         try{
             const { 
-                id_producto,
-                nombre,
-                marca,
-                codigo,
-                stock,
-                precio,
-                id_estado,
-                id_categoria_producto                
+                fecha_entrega,
+                id_orden,
+                departamento,
+                municipio,
+                zona,
+                complemento_direccion,
+                nombre = "",
+                apellido = "",
+                correo_electronico = "",
+                telefono = "",               
             } = req.body;
             
             // Validar campos obligatorios
-            if (!nombre || !marca || !codigo || !id_estado || !id_categoria_producto || !precio || !stock || !id_producto) {
+            if (!fecha_entrega || !id_orden || !departamento || !municipio || !zona || !complemento_direccion) {
                 return res.status(400).json({response_text:"Faltan campos obligatorios"});
             }
                         ;
@@ -49,21 +51,11 @@ module.exports = (express,app) => {
             
             try {
                 // Llamar al procedimiento almacenado para crear un producto
-                const state = await sequelize.query(`EXEC update_producto ${id_producto},
-                                                                            '${nombre}', 
-                                                                            '${marca}', 
-                                                                            '${codigo}', 
-                                                                            ${stock},
-                                                                            ${precio}, 
-                                                                            ${id_estado}, 
-                                                                            ${id_categoria_producto},
-                                                                            ${id_usuario};`
-                                                                        );
-                // if (state[0].row_aff === 0) {
-                //     return res.status(400).json({response_text:"Error al crear estado"});
-                // }
+                const state = await sequelize.query(`EXEC update_orden '${fecha_entrega}', 
+                    ${id_orden}, '${departamento}', '${municipio}', '${zona}', '${complemento_direccion}', '${nombre}', '${apellido}', '${correo_electronico}', '${telefono}', ${id_usuario}`);
+
                 return res.status(200).json({
-                    "response_text": "Producto actualizado", 
+                    "response_text": "Orden actualizado", 
                 });
             }catch (error) {
                 console.log(error)

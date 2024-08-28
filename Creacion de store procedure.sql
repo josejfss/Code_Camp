@@ -570,9 +570,6 @@ END
 -- -----------------------------------------------
 CREATE PROCEDURE update_orden
 	@fecha_entrega date,
-	@total_orden float,
-	@id_usuario int,
-	@id_estado int,
 	@id_orden int,
 	@departamento VARCHAR(70),
 	@municipio varchar(70),
@@ -581,9 +578,8 @@ CREATE PROCEDURE update_orden
 	@nombre varchar(100) = NULL,
 	@apellido varchar(100) = NULL,
 	@correo_electronico varchar(50) = null,
-	@telefono varchar(45)= NULL
-
-
+	@telefono varchar(45)= NULL,
+	@id_usuario int
 AS
 BEGIN
 BEGIN TRANSACTION;
@@ -594,9 +590,6 @@ BEGIN TRY
 		telefono = @telefono,
 		correo_electronico = @correo_electronico,
 		fecha_entrega = @fecha_entrega,
-		total_orden = @total_orden,
-		id_estado = @id_estado,
-		id_usuario = @id_usuario,
 		nombre = @nombre,
 		apellido = @apellido,
 		departamento = @departamento,
