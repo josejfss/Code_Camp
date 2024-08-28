@@ -22,3 +22,13 @@
 - Archivos:
     - Archivos con extensión *.sql*: Archivos utilizado para DDL, DML de la base de datos.
     - ER de tienda.mwb: Este archivo se encuentra el diagrama actualizado de la base de datos utilizado para este proyecto. El software compatible para abrir el diagrama es *MySQL Workbench*
+
+- Comandos para levantar el backend
+    - Para levantar el servidor en modo desarrollo:
+    ```
+        npm run dev
+    ```
+    - Para levantar el servidor en producción
+    ```
+        npm start
+    ```

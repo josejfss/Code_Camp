@@ -47,7 +47,7 @@ module.exports = (express,app) => {
                         ;
             const token = req.headers.authorization.split(' ').pop() //TODO:123123213
             const {id_usuario} = await verifyToken(token)
-            //Validad si viene archivo en files
+            
             
             try {
                 // Llamar al procedimiento almacenado para crear un producto

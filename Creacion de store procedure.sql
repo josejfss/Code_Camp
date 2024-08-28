@@ -962,3 +962,7 @@ SELECT * FROM pedido;
 
 SELECT * FROM orden;
 
+
+BACKUP DATABASE code_camp
+TO DISK = 'C:\code_camp_2\code_camp.bak'
+WITH FORMAT, INIT;
