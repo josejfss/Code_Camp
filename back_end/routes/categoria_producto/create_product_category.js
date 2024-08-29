@@ -3,21 +3,7 @@ const upload = multer({ dest: 'uploads/' })
 const checkAuth = require('../../middleware/auth');
 const check_role_auth = require('../../middleware/role_auth');
 const { verifyToken } = require('../../encryption/jwt')
-
-//Configurar sequelize para sql server
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize (process.env.DATABASE, 
-    process.env.USER_DATABASE, 
-    process.env.PASSWORD_USER_DATABASE, {
-    host: process.env.HOST_DATABASE,
-    dialect: 'mssql',
-    port: process.env.PORT_DATABASE,
-    dialectOptions: {
-        options: {
-            encrypt: true,
-        }
-    }
-});
+const sequelize = require('../../base_datos/conexion_bd')
 
 
 module.exports = (express,app) => {

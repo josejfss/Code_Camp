@@ -481,23 +481,113 @@ DROP TYPE tipo_detalle_orden;
 DROP PROCEDURE crear_pedido;
 
 CREATE PROCEDURE crear_pedido
+	@departamento varchar(70),
+	@municipio varchar(70),
+	@zona varchar(10),
+	@complemento_direccion varchar(250),
+	@fecha_entrega date,
+	@id_usuario int,
+	@id_estado int,
+	@detalle_orden as tipo_detalle_orden READONLY,
+	@telefono varchar(45),
+	@correo_electronico varchar(50) = NULL,
+	@nombre varchar(100) = NULL,
+	@apellido varchar(100) = NULL
+AS
+BEGIN
+	DECLARE @orden_id INT
+	DECLARE @total_pedido FLOAT
+	BEGIN TRANSACTION;
+
+	BEGIN TRY
+		-- Insertar los valores de la orden
+		INSERT INTO orden(
+			fecha_creacion,
+			nombre,
+			apellido,
+			departamento,
+			municipio,
+			zona,
+			complemento_direccion,
+			telefono,
+			correo_electronico,
+			fecha_entrega,
+			id_usuario,
+			id_estado
+		)
+		VALUES (
+			GETDATE(),
+			@nombre,
+			@apellido,
+			@departamento,
+			@municipio,
+			@zona,
+			@complemento_direccion,
+			@telefono,
+			@correo_electronico,
+			@fecha_entrega,
+			@id_usuario,
+			@id_estado
+		);
+
+		-- obtener el id de la orden
+		SET @orden_id = SCOPE_IDENTITY();
+
+		-- Insertar en la tabla detalle orden
+		INSERT INTO pedido(cantidad, id_orden, id_producto, subtotal)
+        SELECT do.cantidad, @orden_id, do.id_producto, (do.cantidad * do.precio) AS subtotal
+        FROM @detalle_orden do;
+
+		-- Calcular el total del pedido
+
+		SET @total_pedido = (select SUM(subtotal) total from pedido where id_orden = @orden_id);
+
+		-- Actualizar el total del pedido en la tabla orden
+		UPDATE orden SET total_orden = @total_pedido where id_orden = @orden_id;
+
+
+		-- llenado de bitacora
+		INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+		VALUES (GETDATE(), @id_usuario, 'Se creo el registro en la tabla ORDEN CON  ID ORDEN = '+ CONVERT(varchar(25), @orden_id));
+		-- Confirmamos la transaccion
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		-- deshacemos la transaccion si hay un error
+		ROLLBACK TRANSACTION;
+
+		-- Manejamos los errores
+        DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR(@ErrorMensaje, 16, 1);
+		
+		-- llenado de bitacora
+		INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+		VALUES (GETDATE(), @id_usuario, 'ERROR al registar informacion en TABLA ORDEN, ERROR = ' + @ErrorMensaje);
+
+	END CATCH
+END
+
+
+------------------------------------------CREAR PEDIDO V2 ---------------------------------------------------
+DROP PROCEDURE crear_pedido_2;
+CREATE PROCEDURE crear_pedido_2
 	
 	@departamento varchar(70),
 	@municipio varchar(70),
 	@zona varchar(10),
 	@complemento_direccion varchar(250),
-	@telefono varchar(45),
 	@fecha_entrega date,
-	@total_orden float,
 	@id_usuario int,
 	@id_estado int,
-	@detalle_orden as tipo_detalle_orden READONLY,
+	@detalle_orden NVARCHAR(MAX),
+	@telefono varchar(45) = NULL,
+	@correo_electronico varchar(50) = NULL,
 	@nombre varchar(100) = NULL,
-	@apellido varchar(100) = NULL,
-	@correo_electronico varchar(50) = NULL
+	@apellido varchar(100) = NULL
 AS
 BEGIN
 	DECLARE @orden_id INT
+	DECLARE @total_pedido FLOAT
 
 	BEGIN TRANSACTION;
 
@@ -514,7 +604,6 @@ BEGIN
 			telefono,
 			correo_electronico,
 			fecha_entrega,
-			total_orden,
 			id_usuario,
 			id_estado
 		)
@@ -529,7 +618,6 @@ BEGIN
 			@telefono,
 			@correo_electronico,
 			@fecha_entrega,
-			@total_orden,
 			@id_usuario,
 			@id_estado
 		);
@@ -538,15 +626,26 @@ BEGIN
 		SET @orden_id = SCOPE_IDENTITY();
 
 		-- Insertar en la tabla detalle orden
-		INSERT INTO pedido(cantidad, precio, id_orden, id_producto, subtotal)
-        SELECT do.cantidad, do.precio, @orden_id, do.id_producto, (do.cantidad * do.precio) AS subtotal
-        FROM @detalle_orden do;
+		INSERT INTO pedido(cantidad, id_orden, id_producto, subtotal)
+        SELECT 
+			 JSON_VALUE(detalle.value, '$.cantidad') AS cantidad,
+			 @orden_id,
+			 JSON_VALUE(detalle.value, '$.id_producto') AS _id_producto,
+			 (SELECT (p.precio * JSON_VALUE(detalle.value, '$.cantidad')) as sub_total
+			 FROM producto p WHERE p.id_producto = JSON_VALUE(detalle.value, '$.id_producto')
+			 )
+        FROM OPENJSON(@detalle_orden) AS detalle;
 
+		-- obtenemos el total del pedido
+		SET @total_pedido = (select SUM(subtotal) total from pedido where id_orden = @orden_id);
+
+		-- Actualizar el total del pedido en la tabla orden
+		UPDATE orden SET total_orden = @total_pedido where id_orden = @orden_id;
 
 		-- llenado de bitacora
 		INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
 		VALUES (GETDATE(), @id_usuario, 'Se creo el registro en la tabla ORDEN CON  ID ORDEN = '+ CONVERT(varchar(25), @orden_id));
-		-- Confirmamos la transacci�n
+		-- Confirmamos la transaccion
 		COMMIT TRANSACTION;
 	END TRY
 	BEGIN CATCH
@@ -563,7 +662,6 @@ BEGIN
 
 	END CATCH
 END
-
 
 --------------------------------------------------
 -- CREAR SP PARA MODFICAR LA TABLA ORDEN
@@ -667,8 +765,131 @@ END CATCH
 END;
 
 
+-- ------------------------------------------------------
+-- ACTUALIZAR EL ESTADO DE LA ORDEN
+---------------------------------------------------------
+
+CREATE PROCEDURE aceptar_pedido
+	@id_orden int,
+	@id_estado int,
+	@descripcion varchar(200),
+	@id_usuario int
+	
+AS
+BEGIN
+BEGIN TRANSACTION;
+BEGIN TRY
+	
+	
+
+	-- Verificar que el stock no quede negativo
+        IF EXISTS (
+            SELECT 1
+            FROM producto p
+            JOIN (
+                SELECT 
+                    p.id_producto,
+                    p.cantidad
+                FROM pedido p
+				inner join orden o  ON o.id_orden = p.id_orden
+				where o.id_orden = @id_orden
+            ) d ON p.id_producto = d.id_producto
+            WHERE p.stock < d.cantidad
+        )
+        BEGIN
+            THROW 51000, 'Stock insuficiente para uno o más productos.', 1;
+			-- llenado de bitacora
+			INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+			VALUES (GETDATE(), @id_usuario, 'stock insuficiente para completar la ORDEN ID = ' + CONVERT(varchar(25), @id_orden));
+        END
+
+		-- Descontar el stock de los productos
+        UPDATE p
+        SET p.stock = p.stock - d.Cantidad
+        FROM producto p
+        JOIN (
+            SELECT 
+                    p.id_producto,
+                    p.cantidad
+                FROM pedido p
+				inner join orden o  ON o.id_orden = p.id_orden
+				where o.id_orden = @id_orden
+        ) d ON p.id_producto = d.id_producto;
 
 
+	-- Actualizar tabla orden}
+	UPDATE orden
+		SET descripcion = @descripcion,
+			id_estado = @id_estado
+		WHERE id_orden = @id_orden;
+
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'Se modifico la tabla PRODUCTOS para descontar stokc de la ORDEN ID = '+ CONVERT(varchar(25), @id_orden));
+
+	COMMIT TRANSACTION;
+
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al MODIFICAR informacion en TABLA PRODUCTO, ERROR = ' + @ErrorMensaje);
+
+END CATCH
+END;
+
+
+-- -------------------------------------------------------------------
+--       SP PARA RECHAZAR LA ORDEN
+-- -------------------------------------------------------------------
+drop procedure rechazar_pedido;
+CREATE PROCEDURE rechazar_pedido
+	@id_orden int,
+	@id_estado int,
+	@id_usuario int,
+	@descripcion varchar(200)
+	
+AS
+BEGIN
+BEGIN TRANSACTION;
+BEGIN TRY
+	-- Actualizar tabla orden}
+	UPDATE orden
+		SET id_estado = @id_estado,
+			descripcion = @descripcion
+		WHERE id_orden = @id_orden;
+
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'Se modifico la tabla PRODUCTOS para descontar stokc de la ORDEN ID = '+ CONVERT(varchar(25), @id_orden));
+
+	COMMIT TRANSACTION;
+
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al MODIFICAR informacion en TABLA PRODUCTO, ERROR = ' + @ErrorMensaje);
+
+END CATCH
+END;
+
+
+select * from estado;
 
 
 
