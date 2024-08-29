@@ -3,8 +3,6 @@ module.exports = (express, app) => {
 	const path = require('path')
 	const config = require('./config')
 
-	app.config = config
-
 	glob.sync('./routes/**/*.js',{
 		ignore: [
 			'./routes/**/*.test.*',

@@ -2,13 +2,14 @@ const multer  = require('multer')
 const upload = multer({ dest: 'uploads/' })
 const checkAuth = require('../../middleware/auth');
 const check_role_auth = require('../../middleware/role_auth');
+const config = require('../../config')
 
-//Configurar sequelize para sql server
 const sequelize = require('../../base_datos/conexion_bd')
+
 
 module.exports = (express,app) => {
     
-	app.get('/get_state', checkAuth, upload.any(), async function(req,res){
+	app.get('/get_orders', checkAuth, check_role_auth(2), upload.any(), async function(req,res){
         try {
         // const { 
         //     id_estado,
@@ -22,7 +23,15 @@ module.exports = (express,app) => {
                 
             try {
                 // Llamar al procedimiento almacenado para crear un estado
-                const state = await sequelize.query(`SELECT * FROM estado;`);
+                const state = await sequelize.query(`select o.id_orden,
+	o.complemento_direccion + ' ' + o.zona +', ' + o.municipio + ', ' + o.departamento direccion,
+	o.fecha_entrega,
+	o.fecha_creacion,
+	o.total_orden,
+	e.nombre estado
+from orden o
+inner join estado e on e.id_estado = o.id_estado
+where o.id_estado = ${config.estados['En_proceso']};`);
     
                 return res.status(200).json({
                     "data" : state[0]
