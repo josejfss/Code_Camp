@@ -25,7 +25,6 @@ module.exports = (express,app) => {
                 stock,
                 id_estado,
                 id_categoria_producto,
-                foto,
                 precio
             } = req.body;
             

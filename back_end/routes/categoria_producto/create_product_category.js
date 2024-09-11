@@ -4,6 +4,7 @@ const checkAuth = require('../../middleware/auth');
 const check_role_auth = require('../../middleware/role_auth');
 const { verifyToken } = require('../../encryption/jwt')
 const sequelize = require('../../base_datos/conexion_bd')
+const {estados} = require('../../config')
 
 
 module.exports = (express,app) => {
@@ -12,7 +13,7 @@ module.exports = (express,app) => {
         try{
             const { 
                 nombre,
-                id_estado
+                id_estado = estados.Activo
             } = req.body;
             
             // Validar campos obligatorios

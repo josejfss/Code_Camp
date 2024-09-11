@@ -1,19 +1,21 @@
 const multer  = require('multer')
 const upload = multer({ dest: 'uploads/' })
-const checkAuth = require('../../middleware/auth');
-const check_role_auth = require('../../middleware/role_auth');
 
+const {estados} = require('../../config')
 const sequelize = require('../../base_datos/conexion_bd')
 
 
 module.exports = (express,app) => {
     
-	app.get('/get_product', checkAuth, upload.any(), async function(req,res){
+	app.get('/get_product', upload.any(), async function(req,res){
         try {
                 
             try {
                 // Llamar al procedimiento almacenado para crear un estado
-                const state = await sequelize.query(`SELECT * FROM producto;`);
+                const state = await sequelize.query(`SELECT p.id_producto, p.nombre, p.marca, p.codigo, p.stock, p.foto, p.precio, e.nombre estado FROM producto p
+                    INNER JOIN estado e ON p.id_estado = e.id_estado
+                    WHERE p.id_estado <> ${estados.Eliminado}
+                    ;`);
                 // actualizar el campo foto con la url de la imagen
                 let datos = state[0].map(producto => ({
                     id_producto: producto.id_producto,
@@ -23,9 +25,7 @@ module.exports = (express,app) => {
                     stock: producto.stock,
                     foto: process.env.URL_BUCKET + producto.foto,
                     precio: producto.precio,
-                    id_estado: producto.id_estado,
-                    id_categoria_producto: producto.id_categoria_producto,
-                    id_usuario: producto.id_usuario,
+                    estado: producto.estado
                   }));
                 return res.status(200).json({
                     "data" : datos

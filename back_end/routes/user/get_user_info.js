@@ -17,10 +17,12 @@ module.exports = (express, app) => {
 
         try {
           query = `select u.correo_electronico, 
-	u.primer_nombre + ' '+ u.segundo_nombre + ' '+ u.primer_apellido + ' ' + u.segundo_apellido as nombre_completo,
+	u.primer_nombre + ' '+ u.segundo_nombre as nombre,
+  u.primer_apellido + ' ' + u.segundo_apellido as apellido,
 	u.fecha_nacimiento,
 	r.nombre rol,
-	e.nombre estado
+	e.nombre estado,
+  u.telefono
 from usuario u
 inner join rol r on u.id_rol = r.id_rol
 inner join estado e on u.id_estado = e.id_estado

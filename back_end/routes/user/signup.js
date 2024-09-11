@@ -2,11 +2,11 @@ const {encriptar} = require('../../encryption/encriptar')
 const multer  = require('multer')
 const upload = multer({ dest: 'uploads/' })
 require('dotenv').config();
-
+const config = require('../../config')
 
 
 //Configurar sequelize para sql server
-const sequelize = require('../../base_datos/conexion_bd')
+const sequelize = require('../../base_datos/conexion_bd');
 
 module.exports = (express,app) => {
     
@@ -20,7 +20,7 @@ module.exports = (express,app) => {
             segundo_apellido,
             telefono,
             fecha_nacimiento,
-            id_estado,
+            id_estado = config.estados["Activo"],
             id_rol
          } = req.body;
         
