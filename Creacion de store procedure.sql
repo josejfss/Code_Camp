@@ -464,6 +464,46 @@ END;
 
 
 
+-- -----------------------------------------------
+--           ACTUALIZAR IMAGEN PRODUCTO -------------
+---------------------------------------------------
+CREATE PROCEDURE update_image
+	@id_producto int,
+	@foto varchar(100),
+	@id_usuario int
+AS
+BEGIN
+BEGIN TRANSACTION;
+BEGIN TRY
+	UPDATE producto
+	SET
+		foto = @foto
+	WHERE id_producto = @id_producto
+
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'Se modifico la IMAGEN de la tabla PRODUCTO con ID = '+ CONVERT(varchar(25), @id_producto));
+
+	COMMIT TRANSACTION;
+
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al MODIFICAR informacion en TABLA PRODUCTO, ERROR = ' + @ErrorMensaje);
+
+END CATCH
+END;
+
+
+
 
 
 -- ----------------------------------------------
