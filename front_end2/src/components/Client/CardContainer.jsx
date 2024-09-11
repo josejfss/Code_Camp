@@ -39,7 +39,7 @@ function CardContainer() {
           md={3}    
   
         >
-              <Card style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <Card style={{ display: 'flex', flexDirection: 'column' }}>
                 <CardMedia
                   productoNombre={producto.nombre}
                   img={producto.foto}

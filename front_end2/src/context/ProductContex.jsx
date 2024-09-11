@@ -33,10 +33,9 @@ export function ProductContextProvider(props) {
   };
 
   const addCar = (producto) =>{
+    producto.id = car.length + 1;
     const newCar = [...car,producto]
     console.log("producto", newCar)
-    
-    producto.id = product.length + 1;
     setCar(newCar)
     localStorage.setItem(`product-${user.id_usuario}`,JSON.stringify(newCar))
   };

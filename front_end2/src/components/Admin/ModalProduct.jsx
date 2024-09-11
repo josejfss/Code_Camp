@@ -11,18 +11,18 @@ const productSchema = Yup.object().shape({
   stock: Yup.number().required('Stock es requerido').min(0, 'Debe ser mayor o igual a 0'),
   categoria_producto: Yup.string().required('Categoría es requerida'),
   precio: Yup.number().required('Precio es requerido').min(0, 'Debe ser mayor o igual a 0'),
-  imagen: Yup.mixed().required('Imagen es requerida'),
+
 });
 
-const ProductModal = ({ open, onClose, onSave, product }) => {
+const ProductModal = ({ open, onClose, onSave, product, categories }) => {
   const initialValues = {
     nombre: product?.nombre || '',
     marca: product?.marca || '',
     codigo: product?.codigo || '',
     stock: product?.stock || 0,
-    categoria_producto: product?.categoria_producto || '',
+    categoria_producto: product?.id_categoria_producto || 1,
     precio: product?.precio || 0,
-    imagen: null, // Imagen por defecto nula (cuando se crea un nuevo producto)
+    imagen: null, 
   };
 
   return (
@@ -56,8 +56,20 @@ const ProductModal = ({ open, onClose, onSave, product }) => {
             if (product && !values.imagen) {
               delete productData.imagen;
             }
+            let formData = new FormData();
+            formData.append('id_producto', product?.id_producto || '');
+            formData.append('nombre', values.nombre);
+            formData.append('marca', values.marca);
+            formData.append('codigo', values.codigo);
+            formData.append('stock', values.stock);
+            formData.append('id_categoria_producto', values.categoria_producto);
+            formData.append('precio', values.precio);
 
-            await onSave(productData);
+            if (productData.imagen) {
+              formData.append('imagen', values.imagen);
+            }
+            console.log("inicio",formData);
+            await onSave(formData);
             setSubmitting(false);
           }}
         >
@@ -114,9 +126,14 @@ const ProductModal = ({ open, onClose, onSave, product }) => {
                 helperText={touched.categoria_producto && errors.categoria_producto}
                 margin="normal"
               >
-                <MenuItem value="Electrónica">Electrónica</MenuItem>
-                <MenuItem value="Ropa">Ropa</MenuItem>
-                <MenuItem value="Alimentos">Alimentos</MenuItem>
+                { categories.length > 0 ?
+                categories.map((category) => (
+                  <MenuItem key={category.id_categoria_producto} value={category.id_categoria_producto}>
+                    {category.nombre}
+                  </MenuItem>
+                ))
+                : <MenuItem value={1}>Categoría 1</MenuItem>
+                }
               </Field>
 
               <Field
@@ -169,6 +186,7 @@ ProductModal.propTypes = {
     category: PropTypes.object,
     onSave: PropTypes.func.isRequired,
     create: PropTypes.bool,
-    product: PropTypes.object
+    product: PropTypes.object,
+    categories: PropTypes.any.isRequired,
   };
   

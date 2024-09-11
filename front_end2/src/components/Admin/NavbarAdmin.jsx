@@ -21,6 +21,7 @@ function NavbarAdmin() {
         navigate('/admin/product');
       };
       
+      
     return (
       <AppBar position="fixed">
         <Toolbar>
@@ -38,7 +39,9 @@ function NavbarAdmin() {
             Categoria
           </Button>
   
-          <Button color="inherit" startIcon={<LogoutIcon />} onClick={() => sesionStorageLogout()}>
+          <Button color="inherit" startIcon={<LogoutIcon />} onClick={() => {sesionStorageLogout()
+            handleGoHome()
+          }}>
             Cerrar Sesión
           </Button>
         </Toolbar>

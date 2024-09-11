@@ -127,7 +127,8 @@ const CategoryCrud = () => {
   };
 
   return (
-    <>
+    <div style={{ textAlign: 'center' }}>
+      <h1>Gestión de Productos</h1>
     <Box
       display="flex"
       minHeight="60vh" 
@@ -186,7 +187,7 @@ const CategoryCrud = () => {
       severityS={severity}
       messageS={message}
     />
-    </>
+    </div>
 
 
   );

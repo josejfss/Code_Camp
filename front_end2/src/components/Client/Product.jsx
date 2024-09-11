@@ -15,7 +15,7 @@ function Product() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          height: "80vh",
+          marginTop: "25px",
         }}
       >
       <CardContainer/>

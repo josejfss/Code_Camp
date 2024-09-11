@@ -172,15 +172,6 @@ function RecordPaneAdmin() {
                     onChange={handeDetail}
                     helperText="Agregue su comentario sobre la orden"
                   />
-                  {/* <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => handleOpenModal(orden.id_orden)}
-                  style={{ marginTop: "16px" }}
-                >
-                  Ver Detalles
-                </Button> */}
-                  {/* Botones de Aceptar y Rechazar */}
                   <Grid
                     container
                     justifyContent="flex-end"

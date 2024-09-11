@@ -7,30 +7,18 @@ const sequelize = require('../../base_datos/conexion_bd')
 
 module.exports = (express,app) => {
     
-	app.get('/get_product', upload.any(), async function(req,res){
+	app.get('/get_product2', upload.any(), async function(req,res){
         try {
                 
             try {
                 // Llamar al procedimiento almacenado para crear un estado
-                const state = await sequelize.query(`SELECT p.id_producto, p.nombre, p.marca, p.codigo, p.stock, p.foto, p.precio, e.nombre estado, cp.id_categoria_producto FROM producto p
+                const state = await sequelize.query(`SELECT p.id_producto, p.nombre, p.marca, p.codigo, p.stock, '${process.env.URL_BUCKET}' + p.foto foto, p.precio, e.nombre estado, cp.id_categoria_producto FROM producto p
                     INNER JOIN estado e ON p.id_estado = e.id_estado
                     INNER JOIN categoria_producto cp ON p.id_categoria_producto = cp.id_categoria_producto
                     WHERE p.id_estado <> ${estados.Eliminado}
                     ;`);
-                // actualizar el campo foto con la url de la imagen
-                let datos = state[0].map(producto => ({
-                    id_producto: producto.id_producto,
-                    nombre: producto.nombre,
-                    marca: producto.marca,
-                    codigo: producto.codigo,
-                    stock: producto.stock,
-                    foto: process.env.URL_BUCKET + producto.foto,
-                    precio: producto.precio,
-                    estado: producto.estado,
-                    id_categoria_producto: producto.id_categoria_producto
-                  }));
                 return res.status(200).json({
-                    "data" : datos
+                    "data" : state[0]
                 });
                 
             }catch (error) {
