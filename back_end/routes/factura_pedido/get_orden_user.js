@@ -18,9 +18,11 @@ module.exports = (express, app) => {
 	o.fecha_entrega,
 	o.fecha_creacion,
 	o.total_orden,
-	e.nombre estado
+	e.nombre estado,
+  u.primer_nombre + ' ' + u.segundo_nombre + ' ' + u.primer_apellido + ' ' + u.segundo_apellido nombre_completo
 from orden o
 inner join estado e on e.id_estado = o.id_estado
+inner join usuario u on u.id_usuario = o.id_usuario
 where o.id_usuario = ${id_usuario};`;
           // Llamar al procedimiento almacenado para crear un estado
           const data = await sequelize.query(query);

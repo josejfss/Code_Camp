@@ -9,7 +9,7 @@ const { verifyToken } = require('../../encryption/jwt')
 const uuid = require('uuid')
 
 require('dotenv').config();
-
+const {estados} = require('../../config')
 //Configurar sequelize para sql server
 const sequelize = require('../../base_datos/conexion_bd')
 
@@ -23,17 +23,18 @@ module.exports = (express,app) => {
                 marca,
                 codigo,
                 stock,
-                id_estado,
+                id_estado = estados.Disponible,
                 id_categoria_producto,
-                foto,
                 precio
             } = req.body;
-            
+            console.log('req', req)
             // Validar campos obligatorios
             if (!nombre || !marca || !codigo || !id_estado || !id_categoria_producto || !precio || !stock) {
                 return res.status(400).json({response_text:"Faltan campos obligatorios"});
             }
                         ;
+
+            
             const token = req.headers.authorization.split(' ').pop() //TODO:123123213
             const {id_usuario} = await verifyToken(token)
             //Validad si viene archivo en files

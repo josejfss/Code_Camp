@@ -14,6 +14,8 @@ module.exports = (express,app) => {
             correo_electronico, 
             contrasena
          } = req.body;
+
+		 console.log(req);
         
         // Validar campos obligatorios
          if (!correo_electronico || !contrasena) {
@@ -29,14 +31,15 @@ module.exports = (express,app) => {
 				return res.status(400).json({response_text:"Usuario o contraseña incorrectos"});
 			}
 			// Generar token
-			const {primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, id_rol, id_estado} = usuario[0][0];
+			const {primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, id_rol, id_estado, id_usuario} = usuario[0][0];
 			const token = await tokenSign(usuario[0][0]);
 			return res.status(200).json({
 				"response_text":"Usuario autenticado", 
 				"token_jwr": token,
 				"nombre_completo": `${primer_nombre} ${segundo_nombre} ${primer_apellido} ${segundo_apellido}`,
 				"id_rol": id_rol,
-				"id_estado": id_estado
+				"id_estado": id_estado,
+				"id_usuario": id_usuario
 			});
 		}catch (error) {
 			console.error(error);

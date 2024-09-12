@@ -27,7 +27,7 @@ module.exports = (express,app) => {
             } = req.body;
             
             // Validar campos obligatorios
-            if (!departamento || !municipio || !zona || !complemento_direccion || !fecha_entrega || !detalle_orden) {
+            if (!departamento || !municipio || !complemento_direccion || !fecha_entrega || !detalle_orden) {
                 return res.status(400).json({response_text:"Faltan campos obligatorios"});
             }
             console.log(detalle_orden);

@@ -8,7 +8,7 @@ const sequelize = require('../../base_datos/conexion_bd')
 
 module.exports = (express,app) => {
     
-	app.get('/get_state', checkAuth, upload.any(), async function(req,res){
+	app.get('/get_state', upload.any(), async function(req,res){
         try {
         // const { 
         //     id_estado,

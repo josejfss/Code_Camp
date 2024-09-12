@@ -3,7 +3,7 @@ const upload = multer({ dest: 'uploads/' })
 const checkAuth = require('../../middleware/auth');
 const check_role_auth = require('../../middleware/role_auth');
 const { verifyToken } = require('../../encryption/jwt')
-
+const {estados} = require('../../config')
 
 require('dotenv').config();
 const sequelize = require('../../base_datos/conexion_bd')
@@ -20,9 +20,11 @@ module.exports = (express,app) => {
                 codigo,
                 stock,
                 precio,
-                id_estado,
+                id_estado = estados.Disponible,
                 id_categoria_producto                
             } = req.body;
+
+            console.log(req.body)
             
             // Validar campos obligatorios
             if (!nombre || !marca || !codigo || !id_estado || !id_categoria_producto || !precio || !stock || !id_producto) {

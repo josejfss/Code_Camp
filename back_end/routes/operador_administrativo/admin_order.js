@@ -14,13 +14,14 @@ module.exports = (express,app) => {
         try {    
             const { 
                 id_orden,
-                estado, // 0: Rechazado, 1: Aceptado
+                estado = 0, // 0: Rechazado, 1: Aceptado
                 descripcion = ""
             } = req.body;
             
             console.log(req.body)
+            console.log("id_orden", id_orden, "estado", estado, "descripcion", descripcion)
             // Validar campos obligatorios
-            if (!id_orden || !estado) {
+            if (!id_orden) {
                 return res.status(400).json({response_text:"Faltan campos obligatorio"});
             }
             console.log('aaui estoy')
@@ -29,7 +30,7 @@ module.exports = (express,app) => {
 
             try {
 
-                if (estado === '0') {
+                if (estado === 0) {
                     // Llamar al procedimiento almacenado para crear un estado
                     const state1 = await sequelize.query(`EXEC rechazar_pedido ${id_orden}, ${config.estados['Orden_rechazada']}, ${id_usuario}, '${descripcion}';`);
                     return res.status(200).json({
