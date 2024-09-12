@@ -52,7 +52,7 @@ const ProductModal = ({ open, onClose, onSave, product, categories }) => {
           onSubmit={async (values, { setSubmitting }) => {
             const productData = { ...values };
 
-            // Si se edita un producto, no actualizar la imagen si no se selecciona una nueva
+           //Manejo de imagen
             if (product && !values.imagen) {
               delete productData.imagen;
             }

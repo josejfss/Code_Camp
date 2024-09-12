@@ -58,9 +58,7 @@ module.exports = (express,app) => {
                     },
                     type: QueryTypes.RAW
                 });
-                // if (state[0].row_aff === 0) {
-                //     return res.status(400).json({response_text:"Error al crear estado"});
-                // }
+
                 return res.status(200).json({
                     "response_text": "Factura creada exitosamente", 
                 });

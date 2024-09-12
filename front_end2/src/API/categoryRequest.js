@@ -19,7 +19,7 @@ export const getProductCategory = async ({token_jwr}) => {
   
     } catch (error) {
       console.error('Error en la petición:', error);
-      throw error; // Re-lanzar el error para manejarlo en otro lugar si es necesario
+      throw error; 
     }
   }
 
@@ -44,7 +44,7 @@ export const getProductCategory = async ({token_jwr}) => {
   
     } catch (error) {
       console.error('Error en la petición:', error);
-      throw error; // Re-lanzar el error para manejarlo en otro lugar si es necesario
+      throw error;
     }
   }
 
@@ -68,7 +68,7 @@ export const getProductCategory = async ({token_jwr}) => {
   
     } catch (error) {
       console.error('Error en la petición:', error);
-      throw error; // Re-lanzar el error para manejarlo en otro lugar si es necesario
+      throw error; 
     }
   }
 
@@ -95,6 +95,6 @@ export const getProductCategory = async ({token_jwr}) => {
   
     } catch (error) {
       console.error('Error en la petición:', error);
-      throw error; // Re-lanzar el error para manejarlo en otro lugar si es necesario
+      throw error; 
     }
   }

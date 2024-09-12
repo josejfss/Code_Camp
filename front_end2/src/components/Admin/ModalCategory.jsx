@@ -15,8 +15,6 @@ import { useContext } from "react";
 
 const CategoryModal = ({ open, onClose, onSave, create }) => {
   const { category, setCategory } = useContext(CategoryContext);
-  // const [create, setCreate] = useState(true);
-  // const [count, setCount] = useState(0);
 
  
 
@@ -37,7 +35,7 @@ const CategoryModal = ({ open, onClose, onSave, create }) => {
       ),
     }),
     onSubmit: () => {
-      // onSave({'hola': 'pelo'});
+
     },
   });
 

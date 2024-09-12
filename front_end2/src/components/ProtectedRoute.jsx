@@ -9,7 +9,7 @@ export const ProtectedRoute = ({isAllowed, children, redirectTo = "/"}) =>{
     return children ? children : <Outlet />;
 }
 
-// Add the 'isAllowed' prop to the props validation
+
 ProtectedRoute.propTypes = {
     isAllowed: PropTypes.bool.isRequired,
     children: PropTypes.node,

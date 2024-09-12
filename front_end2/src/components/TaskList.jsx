@@ -25,7 +25,5 @@ function TaskList() {
 export default TaskList;
 
 TaskList.prototype = {
-   
-    //validar que tenga la propiedad .length tasks
     tasks: PropTypes.array.isRequired
 }

@@ -18,8 +18,8 @@ export const getOrderAdmin = async ({token_jwr}) => {
       return responseData;
   
     } catch (error) {
-      console.error('Error en la petición:', error);
-      throw error; // Re-lanzar el error para manejarlo en otro lugar si es necesario
+      console.error();
+      throw error; 
     }
   }
   
@@ -46,7 +46,8 @@ export const getOrderAdmin = async ({token_jwr}) => {
       return responseData;
   
     } catch (error) {
-      console.log('Error en la petición:', error);
+      console.log();
+      throw error;
     }
 }
 
@@ -74,6 +75,7 @@ export const resolveOrder = async ({token_jwr}, id_orden, estado, descripcion) =
     return responseData;
 
   } catch (error) {
-    console.log('Error en la petición:', error);
+    console.log();
+    throw error
   }
 }

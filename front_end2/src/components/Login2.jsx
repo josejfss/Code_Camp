@@ -52,7 +52,7 @@ function Login() {
     if (reason === "clickaway") {
       return;
     }
-    setOpen(false); // Cierra el Snackbar
+    setOpen(false);
   };
 
   // Manejar los cambios en los campos del formulario email y password
@@ -94,7 +94,6 @@ function Login() {
         }
       })
       .catch((error) => {
-        // Manejar el error
         console.error("Error en el login:", error);
       });
 

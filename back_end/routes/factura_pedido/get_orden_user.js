@@ -8,7 +8,7 @@ const sequelize = require('../../base_datos/conexion_bd')
 module.exports = (express, app) => {
   app.get("/get_user_order", checkAuth, upload.any(), async function (req, res) {
       try {
-        const token = req.headers.authorization.split(" ").pop(); //TODO:123123213
+        const token = req.headers.authorization.split(" ").pop(); 
         const { id_usuario } = await verifyToken(token);
 
       

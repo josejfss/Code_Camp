@@ -28,9 +28,7 @@ module.exports = (express,app) => {
             try {
                 // Llamar al procedimiento almacenado para crear un estado
                 const product_category = await sequelize.query(`EXEC insert_categoria_producto '${nombre}', ${id_estado}, ${id_usuario};`);
-                // if (state[0].row_aff === 0) {
-                //     return res.status(400).json({response_text:"Error al crear estado"});
-                // }
+
                 return res.status(200).json({
                     "response_text":"Categoria de producto creada", 
                 });

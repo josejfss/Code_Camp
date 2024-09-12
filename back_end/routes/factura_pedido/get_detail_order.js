@@ -9,7 +9,7 @@ module.exports = (express, app) => {
   app.post("/get_detail_order", checkAuth, upload.any(), async function (req, res) {
       try {
         const { id_orden, admin=0 } = req.body;
-        const token = req.headers.authorization.split(" ").pop(); //TODO:123123213
+        const token = req.headers.authorization.split(" ").pop();
         const { id_usuario } = await verifyToken(token);
 
         if (!id_orden) {

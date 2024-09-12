@@ -21,15 +21,13 @@ module.exports = (express,app) => {
             }
             
             //TODO: authorization: 
-            const token = req.headers.authorization.split(' ').pop() //TODO:123123213
+            const token = req.headers.authorization.split(' ').pop() 
             const {id_usuario} = await verifyToken(token)
 
             try {
                 // Llamar al procedimiento almacenado para crear un estado
                 const state = await sequelize.query(`EXEC insert_estado '${nombre}', ${id_usuario};`);
-                // if (state[0].row_aff === 0) {
-                //     return res.status(400).json({response_text:"Error al crear estado"});
-                // }
+
                 return res.status(200).json({
                     "response_text":"Estado creado", 
                 });

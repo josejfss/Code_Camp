@@ -19,10 +19,7 @@ function Product() {
         }}
       >
       <CardContainer/>
-      </Container>
-
-      {/* Snackbar para notificación de producto agregado */}
-      
+      </Container>      
     </ProductContextProvider>
   );
 }
