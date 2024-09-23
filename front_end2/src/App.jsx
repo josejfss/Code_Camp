@@ -12,6 +12,8 @@ import NoAccess from "./components/NoAccess";
 import HomeAdmin from "./components/Admin/HomeAdmin";
 import CategoryContainer from "./components/Admin/CategoryContainer";
 import ProductContainer from "./components/Admin/ProductContainer";
+import FacturaContainer from "./components/Client/FacturaContainer";
+import OrdersContainer from "./components/Admin/OrdersContainer";
 // import CreateUser from "./components/CreateUser";
 export default function App() {
   //Contexto de usuario
@@ -66,6 +68,18 @@ export default function App() {
           }
         />
         <Route
+          path="/user/bill"
+          element={
+            <>
+              {user && user.id_rol === rolUser.cliente ? (
+                <FacturaContainer />
+              ) : (
+                <NoAccess />
+              )}
+            </>
+          }
+        />
+        <Route
           path="/home"
           element={
             <>
@@ -99,6 +113,18 @@ export default function App() {
             <>
               {user && user.id_rol === rolUser.operadorAdministrativo ? (
                 <ProductContainer />
+              ) : (
+                <NoAccess />
+              )}
+            </>
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            <>
+              {user && user.id_rol === rolUser.operadorAdministrativo ? (
+                <OrdersContainer />
               ) : (
                 <NoAccess />
               )}

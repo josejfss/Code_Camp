@@ -5,20 +5,15 @@ export const getProduct = async ({token_jwr}) => {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token_jwr}` // Agregar el token Bearer al encabezado
+      'Authorization': `Bearer ${token_jwr}`
     }
   };
 
   try {
     // Hacer petición a la API
-    const response = await fetch(`${url}/get_product`, options);
-
-    // Verificar si la respuesta es exitosa
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} ${response.statusText}`);
-    }
-
+    const response = await fetch(`${url}/get_product2`, options);
     const responseData = await response.json();
+    responseData.status = response.status;
     return responseData;
 
   } catch (error) {

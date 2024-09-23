@@ -34,7 +34,7 @@ module.exports = (express,app) => {
                 });
                 
             }catch (error) {
-                return res.status(400).json({response_text:error});
+                return res.status(400).json({response_text:error.message});
             }
         }catch (error) {    
             return res.status(400).json({response_text:error});

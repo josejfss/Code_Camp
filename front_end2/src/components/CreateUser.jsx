@@ -45,7 +45,7 @@ function CreateUser({ open, onClose }) {
       primer_apellido: Yup.string().required("Primer apellido es requerido"),
       segundo_apellido: Yup.string(),
       telefono: Yup.string()
-        .matches(/^[0-9]{8,10}$/, "Teléfono inválido, solo números")
+        .matches(/^[0-9]{8}$/, "Teléfono inválido, debe tener 8 dígitos")
         .required("Teléfono es requerido"),
       fecha_nacimiento: Yup.date()
         .max(dayjs(), "La fecha debe ser anterior a hoy")
@@ -263,6 +263,7 @@ setSnackbarOpen(true);
                     fullWidth
                     label="Teléfono"
                     name="telefono"
+                    type="number"
                     value={formik.values.telefono}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}

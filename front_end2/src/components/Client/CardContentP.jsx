@@ -21,14 +21,17 @@ function CardContentP({
   const [quantity, setQuantity] = useState(1);
 
   const handleQuantityChange = (event) => {
-    if (!isNaN(event.target.value)) {
-      const value = parseInt(event.target.value);
-      setQuantity(value);
+    const parsedValue = parseFloat(event.target.value);
+    if (isNaN(parsedValue)) {
+      setQuantity("");
+    } else {
+      setQuantity(parsedValue);
     }
   };
 
   const handleAddToCart = (event) => {
     event.preventDefault();
+    
     if (isNaN(quantity) || quantity <= 0) {
       setMessage("La cantidad debe ser mayor a 0");
       setSeverity("error");
@@ -37,6 +40,22 @@ function CardContentP({
     }
     if (quantity > stock) {
       setMessage("No hay suficiente stock");
+      setSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    }
+    //Validar que quantity sea un numero entero
+    if(!Number.isInteger(quantity)){
+      setMessage("La cantidad debe ser un número entero");
+      setSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    let productTemp = car.filter( (product) => product.id_producto === id);
+    
+    if(stock < productTemp[0]?.cantidad + quantity){
+      setMessage("No hay suficiente stock para agregar esa cantidad");
       setSeverity("error");
       setSnackbarOpen(true);
       return;
@@ -52,12 +71,11 @@ function CardContentP({
       total: parseFloat(quantity) * parseFloat(precio),
 
     };
-    console.log("producto", product);
-    console.log("carrito", car);
-
+    
     addCar(product);
+    
     setMessage(`${quantity} ${productoNombre}(s) agregados al carrito`);
-    console.log("carrito ac", car)
+    setSeverity("success");
     setSnackbarOpen(true);
   };
 

@@ -30,7 +30,7 @@ module.exports = (express,app) => {
             if (!departamento || !municipio || !complemento_direccion || !fecha_entrega || !detalle_orden) {
                 return res.status(400).json({response_text:"Faltan campos obligatorios"});
             }
-            console.log(detalle_orden);
+            
             const nuevo_detalle = JSON.stringify(detalle_orden);
             const token = req.headers.authorization.split(' ').pop() //TODO:123123213
             const {id_usuario} = await verifyToken(token)
@@ -50,7 +50,7 @@ module.exports = (express,app) => {
                 '${nombre}',
                 '${apellido}'`;
 
-                console.log(query);
+                
                 // Llamar al procedimiento almacenado para crear un producto
                 const factura_p = await sequelize.query(`${query}`, {
                     replacements: {
@@ -58,15 +58,12 @@ module.exports = (express,app) => {
                     },
                     type: QueryTypes.RAW
                 });
-                // if (state[0].row_aff === 0) {
-                //     return res.status(400).json({response_text:"Error al crear estado"});
-                // }
                 return res.status(200).json({
                     "response_text": "Factura creada exitosamente", 
                 });
             }catch (error) {
                 console.log(error)
-                return res.status(400).json({response_text:error});
+                return res.status(400).json({response_text:error.message});
             }
         }catch (error) {
             console.log(error)

@@ -53,7 +53,10 @@ function RecordPaneAdmin() {
   useEffect(() => {
     getOrderAdmin(user)
       .then((response) => {
-        setData(response.data);
+        if(response.status === 200){
+          setData(response.data);
+        }
+        
       })
       .catch(() => {});
   }, [user, recordDetail]);
@@ -134,37 +137,47 @@ function RecordPaneAdmin() {
 
   return (
     <div style={{ paddingTop: "64px" }}>
-      <Grid container spacing={2}>
+      <Grid
+    container
+    spacing={2}
+    sx={{
+      margin: "auto",
+      alignContent: "center",
+      alignItems: "center",
+      justifyContent: "center",  // Centrar si hay un solo elemento
+    }}
+    >
         {data.length === 0 ? (
           <Typography sx={{ alignContent: "center", margin: 7 }} variant="h6">
             No hay ordenes
           </Typography>
         ) : (
           data.map((orden) => (
-            <Grid item xs={12} md={6} key={orden.id_orden}>
+            <Grid container item xs={12} md={5} key={orden.id_orden} margin={2}>
               <Card
                 style={{
                   display: "flex",
                   flexDirection: "column",
                   height: "100%",
+                  
                 }}
               >
                 <CardContent>
-                  <Typography variant="h6">Orden #{orden.id_orden}</Typography>
+                  <Typography variant="h6" sx={{textAlign:"center"}}>Orden #{orden.id_orden}</Typography>
                   <Typography variant="body2">
-                    Nombre: {orden.nombre_completo}
+                    <strong>Nombre:</strong> {orden.nombre_completo}
                   </Typography>
                   <Typography variant="body2">
-                    Dirección: {orden.direccion}
+                  <strong>Dirección:</strong> {orden.direccion}
                   </Typography>
                   <Typography variant="body2">
-                    Fecha de Entrega: {orden.fecha_entrega}
+                  <strong>Fecha de Entrega:</strong> {orden.fecha_entrega}
                   </Typography>
                   <Typography variant="body2">
-                    Estado: {orden.estado}
+                  <strong>Estado:</strong> {orden.estado}
                   </Typography>
                   <Typography variant="body2">
-                    Total Orden: Q{orden.total_orden}
+                  <strong>Total Orden</strong>: Q{orden.total_orden}
                   </Typography>
                   <TextField
                     id="outlined-select-currency"
