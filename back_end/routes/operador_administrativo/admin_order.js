@@ -44,12 +44,10 @@ module.exports = (express,app) => {
                     });
                     
                 }
-                // if (state[0].row_aff === 0) {
-                //     return res.status(400).json({response_text:"Error al crear estado"});
-                // }
+   
                 
             }catch (error) {
-                return res.status(400).json({response_text:error});
+                return res.status(400).json({response_text:error.message});
             }
         }catch (error) {
             return res.status(400).json({response_text:error});

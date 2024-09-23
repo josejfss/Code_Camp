@@ -6,6 +6,9 @@ import { Grid, Typography, CardMedia, Box, Button } from "@mui/material";
 
 function Carrito() {
   const { car: carrito, deleteCar, updateCar } = useContext(ProductContext);
+
+  const total = carrito.reduce((acc, producto) => acc + producto.total, 0);
+
   return (
     <>
       <Grid item xs={12} md={5}
@@ -20,13 +23,12 @@ function Carrito() {
 
       }}
       >
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom textAlign={"center"}>
           Desglose del Carrito
         </Typography>
-        {carrito.lenth === 0 ? (
-          <Typography>El carrito está vacío</Typography>
+        {carrito.length === 0 ? (
+          <Typography variant="h6">El carrito está vacío</Typography>
         ) : ( 
-          console.log("carrito 2", carrito),
           carrito.map((producto) => (
             <Box
               key={producto.id}
@@ -45,10 +47,10 @@ function Carrito() {
                   Cantidad: {producto.cantidad}
                 </Typography>
                 <Typography variant="body2">
-                  Precio Unitario: ${producto.precioUnitario}
+                  Precio Unitario: Q{producto.precioUnitario.toFixed(2)}
                 </Typography>
                 <Typography variant="body2">
-                  Total: Q{producto.total}
+                  Total: Q{producto.total.toFixed(2)}
                 </Typography>
                 <Button
                   variant="contained"
@@ -59,14 +61,22 @@ function Carrito() {
             </Box>
           ))
         )}
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => deleteCar()}
-          startIcon={<DeleteIcon />}
-        >
-          Eliminar carrito
-        </Button>
+        { carrito.length > 0 && 
+          (
+          <>
+          <Typography variant="h6" textAlign={"center"}>
+            Total orden Q{total}
+            </Typography>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => deleteCar()}
+              startIcon={<DeleteIcon />}
+            >
+              Eliminar carrito
+            </Button>
+          </>)
+        }
       </Grid>
     </>
   );

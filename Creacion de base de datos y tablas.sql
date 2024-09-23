@@ -57,7 +57,8 @@ CREATE TABLE  producto (
   codigo VARCHAR(45),
   stock FLOAT,
   fecha_creacion DATETIME,
-  foto VARCHAR(100),
+  imagen VARBINARY(MAX),
+  tipo_imagen VARCHAR(45),
   precio float,
   id_estado INT NOT NULL,
   id_categoria_producto INT NOT NULL,
@@ -135,3 +136,7 @@ CREATE TABLE  pedido (
   DROP TABLE usuario;
   DROP TABLE rol;
   DROP TABLE estado;
+
+
+
+  select * from categoria_producto;

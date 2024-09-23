@@ -8,7 +8,7 @@ function ProductContainer() {
   return (
     <CategoryContextProvider>
     <NavbarAdmin/>
-    <Grid container spacing={4} sx={{ padding: 4, margin:6}}>
+    <Grid container item md={11} spacing={4} sx={{ padding: 4, marginTop:5}}>
     <ProductoComponente />
     </Grid>
     </CategoryContextProvider>

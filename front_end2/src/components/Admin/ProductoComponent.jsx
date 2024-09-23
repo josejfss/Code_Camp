@@ -10,6 +10,8 @@ import {
   Paper,
   IconButton,
   Grid,
+  TextField,
+  Grid2,
 } from "@mui/material";
 import ProductModal from "./ModalProduct";
 import {
@@ -23,21 +25,34 @@ import { UserContext } from "../../context/UserContext";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 import { getProductCategory } from "../../API/categoryRequest";
 import { SnackBar } from "../Snackbar";
 import UploadImageModal from "../UploadImage";
 
 const ProductoComponente = () => {
-  const [products, setProducts] = useState();
+  const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState();
   const [openModal, setOpenModal] = useState(false);
+  const [openModalImagen, setopenModalImagen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarMessage, setSnackBarMessage] = useState("");
   const [snackBarSeverity, setSnackBarSeverity] = useState("success");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  let filteredProducts = products.filter((product) =>
+    product.nombre.toLowerCase().includes(searchTerm) ||
+    product.marca.toLowerCase().includes(searchTerm) ||
+    product.codigo.toLowerCase().includes(searchTerm) ||
+    product.categoria.toLowerCase().includes(searchTerm)
+  );
+
+  // Función para manejar el cambio de búsqueda
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value.toLowerCase());
+  };
 
   const handleCloseSnackBar = () => {
     setOpenSnackBar(false);
@@ -46,41 +61,30 @@ const ProductoComponente = () => {
   const { user } = useContext(UserContext);
 
   useEffect(() => {
-    const loadProducts = async () => {
-      const { data } = await getProduct(user);
-      setProducts(data);
-    };
 
-    const loadCategory = async () => {
-      const { data } = await getProductCategory(user);
-      setCategories(data);
-    };
+    getProduct(user)
+      .then((response) => {
+       
+       setProducts(response.data);
+      })
+  }, [user, setProducts, setCategories]);
 
-    loadProducts();
-    loadCategory();
-  }, [user]);
-
-  useEffect(() => {
-    const loadCategory = async () => {
-      const { data } = await getProductCategory(user);
-      setCategories(data);
-    };
-    loadCategory();
-  }, [user]);
 
   const handleOpenModal = (product = null) => {
-    setSelectedProduct(product);
-    console.log("categoria: ", categories);
-    setOpenModal(true);
+    getProductCategory(user)
+    .then((response) => {
+      setCategories(response.data);
+      setSelectedProduct(product);
+      setOpenModal(true);
+    }).catch((error) => {
+      console.log("error", error);
+    });
+    
   };
 
-  const handleOpenModalUploadImage = (product = null) => {
-    setSelectedProduct(product);
-    setOpenModal(true);
-  };
 
   const handleCloseModalUploadImage = () => {
-    setOpenModal(false);
+    setopenModalImagen(false);
   };
   
   const handleUpdateImage = async (formData) => {
@@ -98,7 +102,6 @@ const ProductoComponente = () => {
 
 
   const handleSaveProduct = async (productData) => {
-    // Editar producto
     if (selectedProduct) {
       let { status, response_text } = await putProduct(user, productData);
       if (status !== 200) {
@@ -131,7 +134,6 @@ const ProductoComponente = () => {
   };
 
   const handleDeleteProduct = async (productoData) => {
-    console.log("productoData: ", productoData);
     const { response_text, status } = await deleteProduct(user, productoData);
     if (status !== 200) {
       setSnackBarMessage(response_text);
@@ -148,46 +150,62 @@ const ProductoComponente = () => {
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <div style={{ textAlign: "center", margin:"auto"}}>
       <h1>Gestión de Productos</h1>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<AddIcon />}
-        onClick={() => handleOpenModal()}
-      >
-        Crear Producto
-      </Button>
-
+      <Grid2 container md={11} xs={11} sx={{justifyContent:"center"}}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={() => handleOpenModal()}
+          sx={{marginBottom: 3}}
+        >
+          Crear Producto
+        </Button>
+      </Grid2>
+      <Grid2 container md={11} xs={11} sx={{justifyContent:"center"}}>
+        <TextField
+          fullWidth
+          label="Buscar por nombre, código, marca o categoría"
+          variant="outlined"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          sx={{marginBottom: 1, width: "80%"}}
+        />
+      </Grid2>
       <TableContainer
         component={Paper}
-        style={{ marginTop: "20px", width: "100%" }}
+        style={{ marginTop: "20px" }}
       >
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell>Imagen</TableCell>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Marca</TableCell>
-              <TableCell>Código</TableCell>
-              <TableCell>Stock</TableCell>
-              <TableCell>Precio</TableCell>
-              <TableCell>Acciones</TableCell>
+            <TableRow >
+            <TableCell sx={{textAlign:"center"}}><strong>ID</strong></TableCell>
+              <TableCell sx={{textAlign:"center"}}><strong>Imagen</strong></TableCell>
+              <TableCell sx={{textAlign:"center"}}><strong>Nombre</strong></TableCell>
+              <TableCell sx={{textAlign:"center"}}><strong>Marca</strong></TableCell>
+              <TableCell sx={{textAlign:"center"}}><strong>Categoria</strong></TableCell>
+              <TableCell sx={{textAlign:"center"}}><strong>Código</strong></TableCell>
+              <TableCell sx={{textAlign:"center"}}><strong>Stock</strong></TableCell>
+              <TableCell sx={{textAlign:"center"}}><strong>Precio</strong></TableCell>
+              <TableCell sx={{textAlign:"center"}}><strong>Acciones</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody key={1} direction={"row"}>
-            {products
-              ? products.map((product) => (
-                  <TableRow key={product.id_producto} >
+            {filteredProducts
+              ? filteredProducts.map((product) => (
+                  <TableRow key={product.id_producto}>
+                    <TableCell>{product.id_producto}</TableCell>
                     <TableCell>
-                      <img src={product.foto} alt={product.nombre} width={50} />
+                      <img src={product.foto} alt={product.nombre} width={100} />
                     </TableCell>
                     <TableCell>{product.nombre}</TableCell>
                     <TableCell>{product.marca}</TableCell>
+                    <TableCell>{product.categoria}</TableCell>
                     <TableCell>{product.codigo}</TableCell>
                     <TableCell>{product.stock}</TableCell>
                     <TableCell>Q{product.precio}</TableCell>
-                    <TableCell width={20}>
+                    <TableCell width={100}>
                     <Grid
                     container
                     justifyContent="flex-end"
@@ -206,9 +224,6 @@ const ProductoComponente = () => {
                         onClick={() => handleDeleteProduct(product)}
                       >
                         <DeleteIcon />
-                      </IconButton>
-                      <IconButton onClick={() => handleOpenModalUploadImage(product)}>
-                        <AttachFileIcon />
                       </IconButton>
                       </Grid>
                     </Grid>
@@ -230,9 +245,9 @@ const ProductoComponente = () => {
         />
       )}
 
-      {openModal && (
+      {openModalImagen && (
         <UploadImageModal
-        open={openModal}
+        open={openModalImagen}
         handleClose={handleCloseModalUploadImage}
         currentImage={selectedProduct?.foto}
         saveImage={handleUpdateImage}

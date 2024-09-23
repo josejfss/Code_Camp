@@ -9,16 +9,21 @@ export function ProductContextProvider(props) {
 
   const [car, setCar] = useState([]);
   const [product, setProduct] = useState(null);
+  const [totalQuantity, setTotalQuantity] = useState(0);
 
   const getProducts = async () => {
     try {
       const response = await getProduct(user);
-      console.log(response);
       setProduct(JSON.parse(response));
     } catch (error) {
       console.error("Error al obtener productos:", error);
     }
   };
+
+  useEffect(() => {
+    let quantity =  car.reduce((acc, producto) => acc + producto.cantidad, 0);
+    setTotalQuantity(quantity);
+  }, [car, setCar]);
 
 
   const deleteCar = () =>{
@@ -33,9 +38,27 @@ export function ProductContextProvider(props) {
   };
 
   const addCar = (producto) =>{
+    const productTemp = car.filter((product) => product.id_producto === producto.id_producto)
+    if(productTemp.length > 0){
+      
+      const newCar = car.map((product) => {
+        if(product.id_producto === producto.id_producto){
+          const newProduct = {
+            ...product,
+            cantidad: product.cantidad + producto.cantidad,
+            total : product.total + producto.total
+          }
+          return newProduct
+        }
+        return product
+      })
+      
+      setCar(newCar)
+      localStorage.setItem(`product-${user.id_usuario}`,JSON.stringify(newCar))
+      return
+    }
     producto.id = car.length + 1;
     const newCar = [...car,producto]
-    console.log("producto", newCar)
     setCar(newCar)
     localStorage.setItem(`product-${user.id_usuario}`,JSON.stringify(newCar))
   };
@@ -62,7 +85,8 @@ export function ProductContextProvider(props) {
         updateCar,
         product,
         setProduct,
-        getProducts
+        getProducts,
+        totalQuantity
       }}
     >
       {props.children}

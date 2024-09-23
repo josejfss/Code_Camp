@@ -70,7 +70,7 @@ function FormFacturacion() {
         .min(dayjs(), "La fecha debe ser posterior a hoy")
         .required("Fecha de entrega es requerida"),
       telefono: Yup.string()
-        .matches(/^[0-9]{8,10}$/, "Teléfono inválido, solo números")
+        .matches(/^[0-9]{8}$/, "Teléfono inválido, solo se permiten 8 dígitos numéricos")
         .required("Teléfono es requerido"),
       correo: Yup.string()
         .email("Correo electrónico inválido")
@@ -89,7 +89,26 @@ function FormFacturacion() {
     setOpenDialog(false);
 
     event.preventDefault();
-    
+
+    if(car.length === 0){
+      setMessage("No hay productos en el carrito");
+      setSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    //Datos del detalle de la orden
+    const carTemp = car.map((item) => {
+      return {
+        id_producto: item.id_producto,
+        marca: item.marca,
+        cantidad: item.cantidad,
+        precio_unitario: item.precioUnitario,
+        nombre: item.nombre,
+        total: item.total,
+      };
+    });
+
     let data = {
         departamento: formik.values.departamento,
         municipio: formik.values.municipio,
@@ -97,19 +116,26 @@ function FormFacturacion() {
         complemento_direccion: formik.values.complemento_direccion,
         fecha_entrega: formik.values.fecha_entrega,
         telefono: formik.values.telefono,
-        correo: formik.values.correo,
+        correo_electronico: formik.values.correo,
         nombre: formik.values.nombre,
         apellido: formik.values.apellido,
-        detalle_orden : car
+        detalle_orden : carTemp,
     };
     console.log("datos post",data);
 
     // Llamar a la función para hacer la petición a la API
     postOrderRequest(user, data)
     .then((responseData) => {
-        setMessage(responseData.response_text);
-        deleteCar();
-        setSeverity("success");
+      if(responseData.status !== 200){
+        setSeverity("error");
+        message(responseData.response_text);
+        setSnackbarOpen(true);
+        return;
+      }
+
+      setMessage(responseData.response_text);
+      deleteCar();
+      setSeverity("success");
     })
     .catch((error) => {
         setSeverity("error");
@@ -152,12 +178,9 @@ function FormFacturacion() {
   //Obtener información del usuario
 
   const getMunicipality = (deparment) => {
-    console.log(deparment);
-    console.log("data", departamentoMunicipio);
     const municipality = departamentoMunicipio.filter(
       (item) => item.title === deparment
     );
-    console.log("municipality", municipality);
     setMunicipio(municipality[0].mun);
   };
 

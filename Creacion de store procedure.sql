@@ -227,6 +227,59 @@ BEGIN CATCH
 END CATCH
 END;
 
+-- -------------------------------------------------------
+--            SP PARA ELIMINAR CATEGORIA
+----------------------------------------------------------
+
+CREATE PROCEDURE delete_categoria_producto
+	@id_categoria_producto INT,
+	@id_estado INT,
+	@id_usuario INT
+AS
+BEGIN
+BEGIN TRANSACTION;
+BEGIN TRY
+	-- Verificar que un producto lo este utilizando la categoria
+        IF EXISTS (
+            SELECT 1
+            FROM producto p
+            WHERE p.id_categoria_producto = @id_categoria_producto
+        )
+        BEGIN
+            THROW 51000, 'No se puede eliminar. La categoria se encuentra en uso', 1;
+			-- llenado de bitacora
+			INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+			VALUES (GETDATE(), @id_usuario, 'La categoria que se intento eliminar se encuentra en uso');
+        END
+	UPDATE categoria_producto
+	SET 
+		id_estado = @id_estado,
+		id_usuario = @id_usuario
+	WHERE id_categoria_producto = @id_categoria_producto;
+
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'Se elimino el REGISTRO de la tabla CATEGORIA_PRODUCTO = '+ CONVERT(varchar(25), @id_categoria_producto));
+
+	COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+	-- deshacemos la transaccion si hay un error
+	ROLLBACK TRANSACTION;
+
+	-- Manejamos los errores
+	DECLARE @ErrorMensaje NVARCHAR(4000) = ERROR_MESSAGE();
+	RAISERROR(@ErrorMensaje, 16, 1);
+	
+	-- llenado de bitacora
+	INSERT INTO bitacora(timestamp_operacion, id_usuario, descripcion)
+	VALUES (GETDATE(), @id_usuario, 'ERROR al MODIFICAR informacion en TABLA CATEGORIA_PRODUCTO, ERROR = ' + @ErrorMensaje);
+
+END CATCH
+END;
+
+
+
 
 -- ----------------------------------------------
 --            SP TABLA USUARIO

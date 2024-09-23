@@ -78,7 +78,6 @@ function Login() {
     login(sesion)
       .then((responseData) => {
         // Manejar la respuesta exitosa
-        console.log("Aporbado", responseData);
         const { status, data } = responseData;
         if (status === 200) {
           setMessage("Bienvenido");
@@ -90,7 +89,6 @@ function Login() {
           setMessage(data.response_text);
           setSeverity("error");
           setOpen(true);
-          console.log("mal");
         }
       })
       .catch((error) => {

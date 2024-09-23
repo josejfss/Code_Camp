@@ -9,6 +9,7 @@ export function UserContextProvider(props) {
   const [user, setUser] = useState(null);
   const [product, setProduct] = useState(null);
 
+
   const deleteTask = (taskId) => {
     console.log(tasks);
 

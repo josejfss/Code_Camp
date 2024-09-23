@@ -24,12 +24,11 @@ const CategoryModal = ({ open, onClose, onSave, create }) => {
     const temp = { ...category };
     temp.nombre = e.target.value;
     setCategory(temp);
-    console.log(temp);
   };
 
   const formik = useFormik({
     initialValues: {
-      nombre_categoria: "",
+      nombre_categoria: category?.nombre || "",
     },
     validationSchema: Yup.object({
       nombre_categoria: Yup.string().required(

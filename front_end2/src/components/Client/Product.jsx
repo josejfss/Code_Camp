@@ -1,5 +1,4 @@
 
-import {ProductContextProvider} from '../../context/ProductContex'
 import CardContainer from './CardContainer';
 import {
   Container,
@@ -9,7 +8,7 @@ import {
 function Product() {
  
   return (
-    <ProductContextProvider>
+
       <Container
         sx={{
           display: "flex",
@@ -20,10 +19,6 @@ function Product() {
       >
       <CardContainer/>
       </Container>
-
-      {/* Snackbar para notificación de producto agregado */}
-      
-    </ProductContextProvider>
   );
 }
 
