@@ -27,7 +27,7 @@ module.exports = (express,app) => {
 
             try {
                 // Llamar al procedimiento almacenado para crear un estado
-                const product_category = await sequelize.query(`EXEC insert_categoria_producto '${nombre}', ${id_estado}, ${id_usuario};`);
+                const product_category = await sequelize.query(`EXEC insert_categoria_producto '${nombre}', ${id_estado}, ${id_usuario}, ${estados.Eliminado};`);
                 // if (state[0].row_aff === 0) {
                 //     return res.status(400).json({response_text:"Error al crear estado"});
                 // }
@@ -37,7 +37,7 @@ module.exports = (express,app) => {
                 
             }catch (error) {
                 console.error(error);
-                return res.status(400).json({response_text:error});
+                return res.status(400).json({response_text:error.message});
             }
         }catch (error) {
             return res.status(400).json({response_text:error});

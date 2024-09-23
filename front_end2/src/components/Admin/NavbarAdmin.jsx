@@ -20,6 +20,10 @@ function NavbarAdmin() {
       const handleGoProducts = () => {
         navigate('/admin/product');
       };
+
+      const handleGoOrders = () => {
+        navigate('/admin/orders');
+      }
       
       
     return (
@@ -37,6 +41,9 @@ function NavbarAdmin() {
           </Button>
           <Button color="inherit" onClick={handleGoCategory}>
             Categoria
+          </Button>
+          <Button color="inherit" onClick={handleGoOrders}>
+            Pedidos
           </Button>
   
           <Button color="inherit" startIcon={<LogoutIcon />} onClick={() => {sesionStorageLogout()

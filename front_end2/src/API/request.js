@@ -12,9 +12,6 @@ export const login =async (data) => {
   try {
     // Hacer petición a la API
     const response = await fetch(`${url}/login`, options);
-    console.log(response);
-
-
     const responseData = await response.json();
     
     return { status: response.status, data: responseData };
@@ -35,11 +32,8 @@ export const getState =async () => {
   try {
     // Hacer petición a la API
     const response = await fetch(`${url}/get_user_role`, options);
-    console.log(response);
-
-
     const responseData = await response.json();
-    
+    responseData.status = response.status;
     return responseData;
   } catch (error) {
     console.error('Error en la petición:', error);

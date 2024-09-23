@@ -21,13 +21,13 @@ module.exports = (express, app) => {
         try {
           let query = ``;
           if (admin === 0){
-            query = `select pe.cantidad, pr.nombre producto, pr.precio precio_unitario, pe.subtotal
+            query = `select pe.cantidad, pr.nombre producto, pr.marca, pr.precio precio_unitario, pe.subtotal
 from orden od
 inner join pedido pe on od.id_orden = pe.id_orden
 inner join producto pr on pr.id_producto = pe.id_producto
 where od.id_usuario = ${id_usuario} and od.id_orden = ${id_orden};`;
           }else{
-            query = `select pe.cantidad, pr.nombre producto, pr.precio precio_unitario, pe.subtotal
+            query = `select pe.cantidad, pr.nombre producto, pr.marca, pr.precio precio_unitario, pe.subtotal
 from orden od
 inner join pedido pe on od.id_orden = pe.id_orden
 inner join producto pr on pr.id_producto = pe.id_producto
@@ -40,10 +40,11 @@ where od.id_orden = ${id_orden};`;
 
           return res.status(200).json({
             data: data[0],
+            response_text: "Detalle de la orden obtenido correctamente",
           });
         } catch (error) {
           console.log(error);
-          return res.status(400).json({ response_text: error });
+          return res.status(400).json({ response_text: error.message });
         }
       } catch (error) {
         console.log(error);

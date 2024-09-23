@@ -1,11 +1,11 @@
 import { Snackbar, Alert } from '@mui/material';
 import PropTypes from "prop-types";
 
-export const SnackBar = ({openS, messageS, severityS, onClose }) => {
+export const SnackBar = ({openS, messageS, severityS, onClose, duracion=3000 }) => {
 
   return (
     <>
-      <Snackbar open={openS} autoHideDuration={3000} onClose={onClose}>
+      <Snackbar open={openS} autoHideDuration={duracion} onClose={onClose}>
         <Alert onClose={onClose} severity={severityS} sx={{ width: "100%" }}>
           {messageS}
         </Alert>
@@ -20,4 +20,5 @@ SnackBar.propTypes = {
     messageS: PropTypes.string.isRequired,
     severityS: PropTypes.string.isRequired,
     onClose: PropTypes.func.isRequired,
+    duracion: PropTypes.number
 };

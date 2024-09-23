@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Button, Box } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Button, Box, TextField } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -22,6 +22,17 @@ const CategoryCrud = () => {
   const [open, setOpen] = useState(false);
 
   const [create, setCreate] = useState();
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  let filteredCategories = categories.filter((category) =>
+    category.nombre.toLowerCase().includes(searchTerm)
+  );
+
+  // Función para manejar el cambio de búsqueda
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value.toLowerCase());
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -51,10 +62,8 @@ const CategoryCrud = () => {
 
   const handleOpenModal = (category = null) => {
     if(category === null) {
-      console.log('entre')
       setCreate(false);
     }else{
-      console.log('entre2', category)
       setCreate(true);
     }
     
@@ -127,35 +136,45 @@ const CategoryCrud = () => {
   };
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h1>Gestión de Productos</h1>
+    <div style={{textAlign:"center", alignItems:"center", margin:"auto"}}>
+      <h1>Gestión de Categoria</h1>
     <Box
       display="flex"
       minHeight="60vh" 
-      width={"100vh"}
+      width={"70vh"}
       flexDirection="column" 
+      alignSelf={"center"}
       
       sx={{ 
-        padding: 2,
         justifyContent: "center",
         alignItems: "center",
+        direction: "column",
       }}
     >
-      <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={() => handleOpenModal()}>
+      <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={() => handleOpenModal()}
+      sx={{marginBottom:3}}>
         Crear Categoría
       </Button>
 
-      <TableContainer component={Paper} sx={{justifyContent:"center"}}>
+      <TextField
+          fullWidth
+          label="Buscar por nombre de categoría"
+          variant="outlined"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          sx={{marginBottom: 3, width: "80%"}}
+        />
+      <TableContainer component={Paper} sx={{alignContent:"center", textAlign:"center"}}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Nombre de Categoría</TableCell>
-              <TableCell>Acciones</TableCell>
+              <TableCell><strong>ID</strong></TableCell>
+              <TableCell><strong>Nombre de Categoría</strong></TableCell>
+              <TableCell><strong>Acciones</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {categories.map((category) => (
+            {filteredCategories.map((category) => (
               <TableRow key={category.id_categoria_producto}>
                 <TableCell>{category.id_categoria_producto}</TableCell>
                 <TableCell>{category.nombre}</TableCell>
@@ -186,6 +205,7 @@ const CategoryCrud = () => {
       onClose={handleClose}
       severityS={severity}
       messageS={message}
+      duracion={4000}
     />
     </div>
 

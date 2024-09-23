@@ -28,18 +28,18 @@ function CardContainer() {
 
   if (product) {
     return (
-      <div style={{ paddingTop: '40px' }}>
-      <Grid container spacing={2}>
+      <div style={{ paddingTop: '40px', margin:"auto" }}>
+      <Grid container spacing={2} textAlign={"center"} alignContent={"center"} alignItems={"center"}>
         {product.map((producto) => (
           <Grid
           item
           key={producto.id_producto}
           xs={12}
           sm={6}    
-          md={3}    
+          md={3}   
   
         >
-              <Card style={{ display: 'flex', flexDirection: 'column' }}>
+              <Card style={{ display: 'flex', flexDirection: 'column', minHeight:'100%', minWidth:'100%' }}>
                 <CardMedia
                   productoNombre={producto.nombre}
                   img={producto.foto}
@@ -56,7 +56,6 @@ function CardContainer() {
                 />
               </Card>
             </Grid>
-          // </Grid>
         ))}
         </Grid>
       </div>
