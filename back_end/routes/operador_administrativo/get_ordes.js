@@ -24,7 +24,7 @@ module.exports = (express,app) => {
             try {
                 // Llamar al procedimiento almacenado para crear un estado
                 const state = await sequelize.query(`select o.id_orden,
-	o.complemento_direccion + ' ' + o.zona +', ' + o.municipio + ', ' + o.departamento direccion,
+	o.complemento_direccion + ', zona ' + o.zona +', ' + o.municipio + ', ' + o.departamento direccion,
 	CONVERT(varchar,o.fecha_entrega,3) fecha_entrega,
 	o.fecha_creacion,
 	o.total_orden,

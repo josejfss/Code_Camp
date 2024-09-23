@@ -30,6 +30,9 @@ function RecordPane() {
       .catch((error) => {
         console.error("Error al obtener las ordenes:", error);
       });
+      return () => {
+        console.log("Desmonanto RecordPane");
+      };
   }, [user]);
 
   const handleSnackbarClose = () => {

@@ -153,13 +153,13 @@ function RecordPaneAdmin() {
           </Typography>
         ) : (
           data.map((orden) => (
-            <Grid container item xs={12} md={5} key={orden.id_orden} margin={2}>
+            <Grid container item xs={12} md={orden.length === 1 ? 5 : 12} key={orden.id_orden} margin={2}>
               <Card
                 style={{
                   display: "flex",
                   flexDirection: "column",
                   height: "100%",
-                  
+                  minWidth: "100%",
                 }}
               >
                 <CardContent>
