@@ -64,7 +64,7 @@ function RecordPane() {
       <Grid container spacing={2}>
       {data.length === 0 ? <Typography sx={{alignContent: "center", margin:7}} variant="h6">No hay ordenes</Typography> :
         (data.map((orden) => (
-          <Grid item xs={12} md={orden.length === 1 ? 5 : 12} key={orden.id_orden} sx={{marginTop:3}}>
+          <Grid item xs={12} md={data.length === 1 ? 11 : 5} key={orden.id_orden} sx={{marginTop:3}}>
             <Card
               style={{
                 display: "flex",
@@ -76,19 +76,19 @@ function RecordPane() {
               }}
             >
               <CardContent>
-                <Typography variant="h6">Orden #{orden.id_orden}</Typography>
+                <Typography variant="h6" textAlign={"center"}>Orden #{orden.id_orden}</Typography>
                 <Typography variant="body2">
-                  Nombre: {orden.nombre_completo}
+                <strong>Nombre:</strong> {orden.nombre_completo}
                 </Typography>
                 <Typography variant="body2">
-                  Dirección: {orden.direccion}
+                <strong>Dirección: </strong> {orden.direccion}
                 </Typography>
                 <Typography variant="body2">
-                  Fecha de Entrega: {orden.fecha_entrega}
+                <strong>Fecha de Entrega:</strong> {orden.fecha_entrega}
                 </Typography>
-                <Typography variant="body2">Estado: {orden.estado}</Typography>
+                <Typography variant="body2"><strong>Estado: </strong>{orden.estado}</Typography>
                 <Typography variant="body2">
-                  Total Orden: Q{orden.total_orden}
+                <strong>Total Orden: </strong> Q{orden.total_orden}
                 </Typography>
                 <Button
                   variant="contained"

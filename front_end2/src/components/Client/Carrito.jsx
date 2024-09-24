@@ -65,7 +65,7 @@ function Carrito() {
           (
           <>
           <Typography variant="h6" textAlign={"center"}>
-            Total orden Q{total}
+            Total orden Q{total.toFixed(2)}
             </Typography>
             <Button
               variant="contained"

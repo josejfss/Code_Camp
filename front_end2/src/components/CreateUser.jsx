@@ -163,6 +163,7 @@ setSnackbarOpen(true);
                     fullWidth
                     label="Contraseña"
                     name="contrasena"
+                    type="password"
                     value={formik.values.contrasena}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}

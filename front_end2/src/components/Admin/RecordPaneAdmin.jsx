@@ -136,15 +136,15 @@ function RecordPaneAdmin() {
   };
 
   return (
-    <div style={{ paddingTop: "64px" }}>
+    <div style={{ paddingTop: "64px", margin: "auto",}}>
+      <Typography variant="h4" textAlign={"center"}>Ordenes Pendientes</Typography>
       <Grid
     container
     spacing={2}
     sx={{
-      margin: "auto",
+      
       alignContent: "center",
       alignItems: "center",
-      justifyContent: "center",  // Centrar si hay un solo elemento
     }}
     >
         {data.length === 0 ? (
@@ -153,7 +153,7 @@ function RecordPaneAdmin() {
           </Typography>
         ) : (
           data.map((orden) => (
-            <Grid container item xs={12} md={orden.length === 1 ? 5 : 12} key={orden.id_orden} margin={2}>
+            <Grid container item xs={12} md={data.length === 1 ? 11 : 5} key={orden.id_orden} margin={2}>
               <Card
                 style={{
                   display: "flex",
