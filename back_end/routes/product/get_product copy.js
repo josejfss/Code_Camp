@@ -22,8 +22,6 @@ module.exports = (express, app) => {
           };
         });
           
-        // });
-        // console.log("productosConImagen", productosConImagen);
         return res.status(200).json({
           data: productosConImagen,
         });

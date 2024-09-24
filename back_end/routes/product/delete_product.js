@@ -39,11 +39,9 @@ module.exports = (express,app) => {
                     "response_text": "Producto eliminado exitosamente", 
                 });
             }catch (error) {
-                console.log(error)
                 return res.status(400).json({response_text:error.message});
             }
         }catch (error) {
-            console.log(error)
             return res.status(400).json({response_text:error});
         }
 

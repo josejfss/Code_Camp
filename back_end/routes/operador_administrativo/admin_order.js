@@ -18,13 +18,12 @@ module.exports = (express,app) => {
                 descripcion = ""
             } = req.body;
             
-            console.log(req.body)
-            console.log("id_orden", id_orden, "estado", estado, "descripcion", descripcion)
+            
             // Validar campos obligatorios
             if (!id_orden) {
                 return res.status(400).json({response_text:"Faltan campos obligatorio"});
             }
-            console.log('aaui estoy')
+            
             const token = req.headers.authorization.split(' ').pop() //TODO:123123213
             const {id_usuario} = await verifyToken(token)
 

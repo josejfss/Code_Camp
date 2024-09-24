@@ -56,7 +56,6 @@ module.exports = (express,app) => {
                 "response_text":"Usuario creado",
             });
 		} catch (error) {
-			console.error(error);
 			return res.status(500).json({response_text:"Error al crear usuario"});
 		}
         

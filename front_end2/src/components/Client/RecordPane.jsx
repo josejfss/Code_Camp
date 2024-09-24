@@ -67,7 +67,7 @@ function RecordPane() {
       <Grid container spacing={2}>
       {data.length === 0 ? <Typography sx={{alignContent: "center", margin:7}} variant="h6">No hay ordenes</Typography> :
         (data.map((orden) => (
-          <Grid item xs={12} md={6} key={orden.id_orden} sx={{marginTop:3}}>
+          <Grid item xs={12} md={orden.length === 1 ? 5 : 12} key={orden.id_orden} sx={{marginTop:3}}>
             <Card
               style={{
                 display: "flex",

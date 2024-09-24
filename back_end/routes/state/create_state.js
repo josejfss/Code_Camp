@@ -27,9 +27,7 @@ module.exports = (express,app) => {
             try {
                 // Llamar al procedimiento almacenado para crear un estado
                 const state = await sequelize.query(`EXEC insert_estado '${nombre}', ${id_usuario};`);
-                // if (state[0].row_aff === 0) {
-                //     return res.status(400).json({response_text:"Error al crear estado"});
-                // }
+
                 return res.status(200).json({
                     "response_text":"Estado creado", 
                 });

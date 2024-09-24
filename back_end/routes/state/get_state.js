@@ -10,16 +10,7 @@ module.exports = (express,app) => {
     
 	app.get('/get_state', upload.any(), async function(req,res){
         try {
-        // const { 
-        //     id_estado,
-        //     nombre
-        //  } = req.body;
-        
-        // // Validar campos obligatorios
-        //  if (!nombre) {
-        //     return res.status(400).json({response_text:"Faltan campos obligatorio NOMBRE"});
-        // }
-                
+ 
             try {
                 // Llamar al procedimiento almacenado para crear un estado
                 const state = await sequelize.query(`SELECT * FROM estado;`);

@@ -26,17 +26,14 @@ inner join usuario u on u.id_usuario = o.id_usuario
 where o.id_usuario = ${id_usuario}`;
           // Llamar al procedimiento almacenado para crear un estado
           const data = await sequelize.query(query);
-          // actualizar el campo foto con la url de la imagen
-          console.log("datos: ", data[0])
+
           return res.status(200).json({
             data: data[0],
           });
         } catch (error) {
-          console.log(error);
           return res.status(400).json({ response_text: error.message });
         }
       } catch (error) {
-        console.log(error);
         return res.status(400).json({ response_text: error });
       }
     }

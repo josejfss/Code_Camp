@@ -28,7 +28,7 @@ module.exports = (express, app) => {
           id_categoria_producto,
           precio,
         } = req.body;
-        console.log("req", req);
+        
         // Validar campos obligatorios
         if (
           !nombre ||
@@ -92,11 +92,9 @@ module.exports = (express, app) => {
             response_text: "Producto creado",
           });
         } catch (error) {
-          console.log(error);
           return res.status(400).json({ response_text: error.message });
         }
       } catch (error) {
-        console.log(error);
         return res.status(400).json({ response_text: error });
       }
     }

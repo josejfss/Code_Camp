@@ -27,8 +27,6 @@ module.exports = (express,app) => {
                 changeImage                
             } = req.body;
 
-            console.log(req.body)
-            
             // Validar campos obligatorios
             if (!nombre || !marca || !codigo || !id_estado || !id_categoria_producto || !precio || !stock || !id_producto) {
                 return res.status(400).json({response_text:"Faltan campos obligatorios"});
@@ -83,7 +81,7 @@ module.exports = (express,app) => {
                         "response_text": "Producto actualizado", 
                     });
                 }catch (error) {
-                    console.log(error)
+                    
                     return res.status(400).json({response_text:error.message});
                 }
             } else{
@@ -105,14 +103,12 @@ module.exports = (express,app) => {
                         "response_text": "Producto actualizado", 
                     });
                 }catch (error) {
-                    console.log(error)
                     return res.status(400).json({response_text:error.message});
                 }
             }
             
            
         }catch (error) {
-            console.log(error)
             return res.status(400).json({response_text:error});
         }
 

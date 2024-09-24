@@ -42,7 +42,6 @@ module.exports = (express,app) => {
 				"id_usuario": id_usuario
 			});
 		}catch (error) {
-			console.error(error);
 			return res.status(401).json({response_text:error});
 		}
 

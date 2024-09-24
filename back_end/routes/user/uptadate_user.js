@@ -58,7 +58,6 @@ module.exports = (express,app) => {
             });
 
 		} catch (error) {
-			console.error(error);
 			return res.status(500).json({response_text:"Error al modificar los datos de usuario"});
 		}
 

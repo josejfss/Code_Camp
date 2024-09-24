@@ -33,11 +33,9 @@ where u.id_usuario = ${id_usuario};`;
 
           return res.status(200).json(data[0][0]);
         } catch (error) {
-          console.log(error);
           return res.status(400).json({ response_text: error });
         }
       } catch (error) {
-        console.log(error);
         return res.status(400).json({ response_text: error });
       }
     }

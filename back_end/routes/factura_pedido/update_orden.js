@@ -25,7 +25,7 @@ module.exports = (express,app) => {
                 correo_electronico = "",
                 telefono = "",               
             } = req.body;
-            console.log(req.body)
+            
             // Validar campos obligatorios
             if (!fecha_entrega || !id_orden || !departamento || !municipio || !zona || !complemento_direccion) {
                 return res.status(400).json({response_text:"Faltan campos obligatorios"});
@@ -44,11 +44,9 @@ module.exports = (express,app) => {
                     "response_text": "Orden actualizado", 
                 });
             }catch (error) {
-                console.log(error)
                 return res.status(400).json({response_text:error.message});
             }
         }catch (error) {
-            console.log(error)
             return res.status(400).json({response_text:error});
         }
 

@@ -65,7 +65,6 @@ module.exports = (express,app) => {
             ).then(data => {
                 console.log("Success in upload image: ");
             }).catch(err => {
-                console.log("Error: ", err);
                 return res.status(400).json({response_text: "Error al subir la imagen"});
             });
 
@@ -77,11 +76,9 @@ module.exports = (express,app) => {
                     "response_text": "Imagen actualizada", 
                 });
             }catch (error) {
-                console.log(error)
                 return res.status(400).json({response_text:error});
             }
         }catch (error) {
-            console.log(error)
             return res.status(400).json({response_text:error});
         }
 

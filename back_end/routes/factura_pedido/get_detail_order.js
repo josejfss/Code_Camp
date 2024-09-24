@@ -34,7 +34,7 @@ inner join producto pr on pr.id_producto = pe.id_producto
 where od.id_orden = ${id_orden};`;
           }
           
-          // Llamar al procedimiento almacenado para crear un estado
+          
           const data = await sequelize.query(query);
           // actualizar el campo foto con la url de la imagen
 
@@ -43,11 +43,9 @@ where od.id_orden = ${id_orden};`;
             response_text: "Detalle de la orden obtenido correctamente",
           });
         } catch (error) {
-          console.log(error);
           return res.status(400).json({ response_text: error.message });
         }
       } catch (error) {
-        console.log(error);
         return res.status(400).json({ response_text: error });
       }
     }
