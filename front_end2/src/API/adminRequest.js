@@ -94,7 +94,6 @@ export const editOrder = async ({token_jwr}, data) => {
     const response = await fetch(`${url}/update_orden`, options);
     const responseData = await response.json();
     responseData.status = response.status;
-    console.log('responseData', responseData);
     return responseData;
 
   } catch (error) {

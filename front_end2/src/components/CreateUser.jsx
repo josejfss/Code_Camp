@@ -93,7 +93,7 @@ function CreateUser({ open, onClose }) {
         };
     createUserAccount(data)
     .then((response) => {
-        console.log("response2",response);
+        
         if (response.status !== 200) {
             setMessage(response.response_text);
             setSeverity("error");
@@ -115,7 +115,6 @@ function CreateUser({ open, onClose }) {
 
     
 // Mostrar cuadro de diálogo para confirmar el pedido
-console.log("Datos enviados: ", data);
 setSnackbarOpen(true);
 
   };

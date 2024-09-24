@@ -121,7 +121,7 @@ function FormFacturacion() {
         apellido: formik.values.apellido,
         detalle_orden : carTemp,
     };
-    console.log("datos post",data);
+    
 
     // Llamar a la función para hacer la petición a la API
     postOrderRequest(user, data)

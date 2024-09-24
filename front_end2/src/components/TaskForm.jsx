@@ -6,7 +6,6 @@ function TaskForm() {
   const handleSubmit = (event) => {
     event.preventDefault();
     // Aquí puedes manejar el envío del formulario
-    console.log('Tarea enviada:', task);
     setTask('');
   };
 

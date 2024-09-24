@@ -11,8 +11,6 @@ export function UserContextProvider(props) {
 
 
   const deleteTask = (taskId) => {
-    console.log(tasks);
-
     setTask(task.filter((task) => task.id !== taskId));
   };
 

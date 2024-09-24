@@ -29,7 +29,7 @@ const UploadImageModal = ({ open, handleClose, currentImage, saveImage, id_produ
       const formData = new FormData();
       formData.append("id_producto", id_product);
       formData.append("image", values.image);
-      console.log("Subiendo imagen: ", values.image);
+      
       saveImage(formData);
       handleClose(); // Cerrar modal después de subir la imagen
     },

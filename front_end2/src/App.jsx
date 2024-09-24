@@ -42,7 +42,6 @@ export default function App() {
           }
         />
         {/* Rutas para usuario normal */}
-        {/* <Route element={<ProtectedRoute isAllowed={!!user && permisos.includes(rolUser.cliente)}/>}> */}
         <Route
           path="/user/car"
           element={
@@ -142,8 +141,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-        {/* <Route path="/signup" element={<CreateUser/>} /> */}
       </Routes>
     </BrowserRouter>
   );

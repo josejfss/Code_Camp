@@ -41,12 +41,10 @@ export const createUserAccount = async (data) => {
     // Hacer petición a la API
     const response = await fetch(`${url}/signup`, options);
     const responseData = await response.json();
-    console.log(responseData);
-
     responseData.status = response.status;
     return responseData;
 
   } catch (error) {
-    console.log('Error en la petición:', error);
+    console.error('Error en la petición:', error);
   }
 }
